@@ -39,7 +39,7 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
         </div>
       </div>
 
-      <div style={{ padding: '16px', backgroundColor: '#0f172a' }}>
+      <div style={{ padding: '16px', backgroundColor: 'var(--color-chassis-inner)' }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr 1fr',
@@ -48,7 +48,7 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
         }}>
           {/* Node 1: CPU */}
           <div style={{
-            backgroundColor: '#1e293b',
+            backgroundColor: 'var(--color-chassis-node)',
             border: `1.5px solid ${cpuStatus === 'busy_polling' ? 'var(--color-idle-bright)' : (cpuStatus === 'interrupt_handler' ? 'var(--color-waiting-bright)' : (cpuStatus === 'free' ? 'var(--color-served-bright)' : 'var(--color-active-bright)'))}`,
             borderRadius: 'var(--border-radius)',
             padding: '10px',
@@ -67,15 +67,15 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
             }}>
               {cpuStatus === 'busy_polling' ? 'BUSY POLLING' : (cpuStatus === 'interrupt_handler' ? 'EXEC ISR' : (cpuStatus === 'dma_setup' ? 'DMA SETUP' : (cpuStatus === 'data_copy' ? 'COPY DATA' : 'BEBAS (USER TASK)')))}
             </div>
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
               {cpuStatus === 'free' ? '✓ Produktif untuk komputasi lain' : '▲ Terkunci operasi I/O'}
             </div>
           </div>
 
           {/* Node 2: System Bus / DMA Controller */}
           <div style={{
-            backgroundColor: '#1e293b',
-            border: '1.5px solid #334155',
+            backgroundColor: 'var(--color-chassis-node)',
+            border: '1.5px solid var(--color-chassis-border)',
             borderRadius: 'var(--border-radius)',
             padding: '10px',
             display: 'flex',
@@ -89,19 +89,19 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
               fontSize: '12px',
               fontFamily: 'var(--font-mono)',
               fontWeight: 700,
-              color: method === 'dma' ? 'var(--color-active-bright)' : '#cbd5e1'
+              color: method === 'dma' ? 'var(--color-active-bright)' : 'var(--color-chassis-text)'
             }}>
               {method === 'dma' ? (memStatus === 'dma_transfer' ? 'BUS MASTER AKTIF' : 'STANDBY') : 'SHARED BUS'}
             </div>
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
               {method === 'dma' ? 'Bypass CPU langsung ke RAM' : 'CPU mengontrol transfer'}
             </div>
           </div>
 
           {/* Node 3: Device Controller */}
           <div style={{
-            backgroundColor: '#1e293b',
-            border: `1.5px solid ${devStatus === 'busy_transfer' ? 'var(--color-active-bright)' : '#334155'}`,
+            backgroundColor: 'var(--color-chassis-node)',
+            border: `1.5px solid ${devStatus === 'busy_transfer' ? 'var(--color-active-bright)' : 'var(--color-chassis-border)'}`,
             borderRadius: 'var(--border-radius)',
             padding: '10px',
             display: 'flex',
@@ -119,15 +119,15 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
             }}>
               {devStatus === 'busy_transfer' ? 'READING HARDWARE' : 'IDLE'}
             </div>
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
               Buffer register transfer
             </div>
           </div>
 
           {/* Node 4: Main Memory (RAM) */}
           <div style={{
-            backgroundColor: '#1e293b',
-            border: `1.5px solid ${memStatus !== 'idle' ? 'var(--color-served-bright)' : '#334155'}`,
+            backgroundColor: 'var(--color-chassis-node)',
+            border: `1.5px solid ${memStatus !== 'idle' ? 'var(--color-served-bright)' : 'var(--color-chassis-border)'}`,
             borderRadius: 'var(--border-radius)',
             padding: '10px',
             display: 'flex',
@@ -145,7 +145,7 @@ export const TransferHardwareView: React.FC<TransferHardwareViewProps> = ({
             }}>
               {memStatus !== 'idle' ? 'DATA BUFFER WRITTEN' : 'READY'}
             </div>
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
               Kapasitas: {dataSizeKb} KB total
             </div>
           </div>

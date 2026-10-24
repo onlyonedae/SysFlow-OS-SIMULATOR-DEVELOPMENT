@@ -8,15 +8,15 @@ export interface DiskParamsFormProps {
   onInputChange: (newInput: DiskSimulationInput) => void;
 }
 
+const ALGORITHMS: DiskAlgorithm[] = ['FCFS', 'SSTF', 'SCAN', 'C-SCAN', 'LOOK', 'C-LOOK'];
+
 export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
   algorithm,
   onAlgorithmChange,
   input,
   onInputChange
 }) => {
-  const [requestText, setRequestText] = useState(input.requests.join(', '));
   const [initialHeadText, setInitialHeadText] = useState(String(input.initialHead));
-  const [minTrackText, setMinTrackText] = useState(String(input.minTrack));
   const [maxTrackText, setMaxTrackText] = useState(String(input.maxTrack));
   const [direction, setDirection] = useState<Direction>(input.direction);
   const [countJumpReturn, setCountJumpReturn] = useState<boolean>(input.countJumpReturn);
@@ -24,162 +24,117 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
 
   // Perbarui saat input eksternal berubah
   useEffect(() => {
-    setRequestText(input.requests.join(', '));
     setInitialHeadText(String(input.initialHead));
-    setMinTrackText(String(input.minTrack));
     setMaxTrackText(String(input.maxTrack));
     setDirection(input.direction);
     setCountJumpReturn(input.countJumpReturn);
   }, [input]);
 
-  // Validasi dan komit ke state induk
-  const validateAndCommit = (
-    reqStr: string,
-    headStr: string,
-    minStr: string,
-    maxStr: string,
-    dir: Direction,
-    jump: boolean
-  ) => {
-    const minVal = parseInt(minStr, 10);
-    const maxVal = parseInt(maxStr, 10);
-    const headVal = parseInt(headStr, 10);
-
-    if (isNaN(minVal) || isNaN(maxVal)) {
-      setErrorMessage('Batas nomor track harus berupa angka valid.');
+  // Hapus sebuah request dari antrean
+  const handleRemoveRequest = (idx: number) => {
+    const updated = input.requests.filter((_, i) => i !== idx);
+    if (updated.length === 0) {
+      setErrorMessage('Antrean request tidak boleh kosong.');
       return;
     }
-    if (minVal < 0) {
-      setErrorMessage('Nomor track minimum tidak boleh bernilai negatif.');
+    setErrorMessage(null);
+    onInputChange({ ...input, requests: updated });
+  };
+
+  // Validasi dan commit perubahan head/track
+  const commitHeadAndRange = (headStr: string, maxStr: string, dir: Direction, jump: boolean) => {
+    const headVal = parseInt(headStr, 10);
+    const minVal = input.minTrack;
+    const maxVal = parseInt(maxStr, 10);
+
+    if (isNaN(headVal) || isNaN(maxVal)) {
+      setErrorMessage('Nilai head dan maks track harus angka valid.');
       return;
     }
     if (minVal >= maxVal) {
-      setErrorMessage(`Track maksimum (${maxVal}) harus lebih besar dari track minimum (${minVal}).`);
-      return;
-    }
-
-    if (isNaN(headVal)) {
-      setErrorMessage('Posisi awal head harus berupa angka.');
+      setErrorMessage(`Track maks (${maxVal}) harus lebih besar dari ${minVal}.`);
       return;
     }
     if (headVal < minVal || headVal > maxVal) {
-      setErrorMessage(`Posisi head awal ${headVal} di luar rentang ${minVal}-${maxVal}. Sesuaikan posisi atau rentang track.`);
+      setErrorMessage(`Head awal ${headVal} di luar rentang ${minVal}–${maxVal}.`);
       return;
     }
-
-    // Parsing antrean request
-    const parts = reqStr
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-
-    if (parts.length === 0) {
-      setErrorMessage('Antrean request tidak boleh kosong. Masukkan minimal satu nomor track.');
-      return;
-    }
-
-    const parsedRequests: number[] = [];
-    for (const part of parts) {
-      const num = parseInt(part, 10);
-      if (isNaN(num)) {
-        setErrorMessage(`Nilai "${part}" bukan angka track yang valid.`);
-        return;
-      }
-      if (num < minVal || num > maxVal) {
-        setErrorMessage(`Track ${num} di luar rentang ${minVal}-${maxVal}. Ubah nilainya atau perbesar rentang track.`);
-        return;
-      }
-      parsedRequests.push(num);
-    }
-
-    // Lolos validasi
+    // Clamp request yang di luar rentang baru
+    const clampedRequests = input.requests.map((r) => Math.max(minVal, Math.min(maxVal, r)));
     setErrorMessage(null);
     onInputChange({
-      requests: parsedRequests,
+      ...input,
       initialHead: headVal,
-      minTrack: minVal,
       maxTrack: maxVal,
       direction: dir,
       countJumpReturn: jump,
-      seekTimePerCylinder: input.seekTimePerCylinder ?? 0.5
+      requests: clampedRequests
+    });
+  };
+
+  const handleGenerateRandom = () => {
+    const minVal = input.minTrack;
+    const maxVal = parseInt(maxTrackText, 10) || 199;
+    const count = 8;
+    const randRequests: number[] = [];
+    for (let i = 0; i < count; i++) {
+      randRequests.push(Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal);
+    }
+    const randHead = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+    setInitialHeadText(String(randHead));
+    setErrorMessage(null);
+    onInputChange({
+      ...input,
+      requests: randRequests,
+      initialHead: randHead,
+      maxTrack: maxVal
     });
   };
 
   const handleApplyTextbookExample = () => {
-    const reqStr = '98, 183, 37, 122, 14, 124, 65, 67';
-    const headStr = '53';
-    const minStr = '0';
-    const maxStr = '199';
-    const dir: Direction = 'left';
-    const jump = true;
-
-    setRequestText(reqStr);
-    setInitialHeadText(headStr);
-    setMinTrackText(minStr);
-    setMaxTrackText(maxStr);
-    setDirection(dir);
-    setCountJumpReturn(jump);
-    validateAndCommit(reqStr, headStr, minStr, maxStr, dir, jump);
-  };
-
-  const handleGenerateRandom = () => {
-    const minVal = parseInt(minTrackText, 10) || 0;
-    const maxVal = parseInt(maxTrackText, 10) || 199;
-    const count = 8;
-    const randRequests: number[] = [];
-
-    for (let i = 0; i < count; i++) {
-      randRequests.push(Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal);
-    }
-
-    const randHead = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-    const reqStr = randRequests.join(', ');
-    const headStr = String(randHead);
-
-    setRequestText(reqStr);
-    setInitialHeadText(headStr);
-    validateAndCommit(reqStr, headStr, minTrackText, maxTrackText, direction, countJumpReturn);
+    setInitialHeadText('53');
+    setMaxTrackText('199');
+    setDirection('left');
+    setCountJumpReturn(true);
+    setErrorMessage(null);
+    onInputChange({
+      requests: [98, 183, 37, 122, 14, 124, 65, 67],
+      initialHead: 53,
+      minTrack: 0,
+      maxTrack: 199,
+      direction: 'left',
+      countJumpReturn: true,
+      seekTimePerCylinder: input.seekTimePerCylinder ?? 0.1
+    });
   };
 
   return (
     <div className="panel-body">
-      {/* Pilihan Metode */}
-      <div className="form-group">
-        <label className="form-label" htmlFor="disk-algo-select">
-          Metode Penjadwalan
-        </label>
-        <select
-          id="disk-algo-select"
-          className="form-select"
-          value={algorithm}
-          onChange={(e) => onAlgorithmChange(e.target.value as DiskAlgorithm)}
-        >
-          <option value="FCFS">FCFS (First-Come, First-Served)</option>
-          <option value="SSTF">SSTF (Shortest Seek Time First)</option>
-          <option value="SCAN">SCAN (Elevator)</option>
-          <option value="C-SCAN">C-SCAN (Circular SCAN)</option>
-          <option value="LOOK">LOOK</option>
-          <option value="C-LOOK">C-LOOK (Circular LOOK)</option>
-        </select>
-      </div>
 
-      {/* Antrean Request */}
+      {/* ── Antrean Request (Chips) ── */}
       <div className="form-group">
-        <label className="form-label" htmlFor="disk-requests-input">
-          Antrean Request Track
+        <label className="form-label">
+          <span>Antrean · {input.requests.length} request</span>
+          <span className="form-label-hint">0–{input.maxTrack}</span>
         </label>
-        <textarea
-          id="disk-requests-input"
-          className="form-textarea"
-          rows={3}
-          value={requestText}
-          onChange={(e) => {
-            setRequestText(e.target.value);
-            validateAndCommit(e.target.value, initialHeadText, minTrackText, maxTrackText, direction, countJumpReturn);
-          }}
-          placeholder="Contoh: 98, 183, 37, 122, 14, 124, 65, 67"
-        />
-        <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+        <div className="request-chips">
+          {input.requests.map((req, idx) => (
+            <span key={`chip-${idx}-${req}`} className="request-chip">
+              {req}
+              <span
+                className="chip-del"
+                role="button"
+                tabIndex={0}
+                aria-label={`Hapus request ${req}`}
+                onClick={() => handleRemoveRequest(idx)}
+                onKeyDown={(e) => e.key === 'Enter' && handleRemoveRequest(idx)}
+              >
+                ×
+              </span>
+            </span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
           <button
             type="button"
             className="btn btn-sm"
@@ -192,19 +147,17 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
             type="button"
             className="btn btn-sm"
             onClick={handleGenerateRandom}
-            title="Bangun antrean acak"
+            title="Buat antrean acak"
           >
-            Acak Antrean
+            Acak
           </button>
         </div>
       </div>
 
-      {/* Posisi Awal Head & Rentang Track */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      {/* ── Head Awal & Rentang Track ── */}
+      <div className="form-input-row">
         <div className="form-group">
-          <label className="form-label" htmlFor="disk-head-input">
-            Posisi Head Awal
-          </label>
+          <label className="form-label" htmlFor="disk-head-input">Head awal</label>
           <input
             id="disk-head-input"
             type="number"
@@ -212,82 +165,107 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
             value={initialHeadText}
             onChange={(e) => {
               setInitialHeadText(e.target.value);
-              validateAndCommit(requestText, e.target.value, minTrackText, maxTrackText, direction, countJumpReturn);
+              commitHeadAndRange(e.target.value, maxTrackText, direction, countJumpReturn);
             }}
           />
         </div>
         <div className="form-group">
-          <label className="form-label" htmlFor="disk-max-track-input">
-            Maks Track
-          </label>
-          <input
-            id="disk-max-track-input"
-            type="number"
-            className="form-input"
-            value={maxTrackText}
+          <label className="form-label" htmlFor="disk-range-select">Rentang track</label>
+          <select
+            id="disk-range-select"
+            className="form-select"
+            value={`0-${maxTrackText}`}
             onChange={(e) => {
-              setMaxTrackText(e.target.value);
-              validateAndCommit(requestText, initialHeadText, minTrackText, e.target.value, direction, countJumpReturn);
+              const val = e.target.value.split('-')[1];
+              setMaxTrackText(val);
+              commitHeadAndRange(initialHeadText, val, direction, countJumpReturn);
+            }}
+          >
+            <option value="0-199">0–199</option>
+            <option value="0-299">0–299</option>
+            <option value="0-499">0–499</option>
+            <option value="0-999">0–999</option>
+          </select>
+        </div>
+      </div>
+
+      {/* ── Arah Awal (SCAN/LOOK) ── */}
+      <div className="form-group">
+        <label className="form-label">Arah awal · keluarga SCAN / LOOK</label>
+        <div className="direction-buttons">
+          <button
+            type="button"
+            className={`dir-btn ${direction === 'left' ? 'active' : ''}`}
+            onClick={() => {
+              setDirection('left');
+              commitHeadAndRange(initialHeadText, maxTrackText, 'left', countJumpReturn);
+            }}
+          >
+            ← Menuju 0
+          </button>
+          <button
+            type="button"
+            className={`dir-btn ${direction === 'right' ? 'active' : ''}`}
+            onClick={() => {
+              setDirection('right');
+              commitHeadAndRange(initialHeadText, maxTrackText, 'right', countJumpReturn);
+            }}
+          >
+            Menuju akhir →
+          </button>
+        </div>
+      </div>
+
+      {/* ── Opsi C-SCAN / C-LOOK ── */}
+      <div className="form-group">
+        <label
+          className="checkbox-group"
+          style={{ cursor: 'pointer' }}
+        >
+          <input
+            type="checkbox"
+            checked={countJumpReturn}
+            onChange={(e) => {
+              setCountJumpReturn(e.target.checked);
+              commitHeadAndRange(initialHeadText, maxTrackText, direction, e.target.checked);
             }}
           />
+          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: '1.4' }}>
+            Hitung lompatan C-SCAN / C-LOOK
+          </span>
+        </label>
+        <div className="form-help" style={{ paddingLeft: '21px' }}>
+          Jarak kembali disertakan pada hasil.
         </div>
       </div>
 
-      {/* Arah Awal Head */}
+      {/* ── Pilihan Metode ── */}
       <div className="form-group">
-        <label className="form-label">Arah Awal Gerakan Head</label>
-        <div style={{ display: 'flex', gap: '12px', marginTop: '2px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
-            <input
-              type="radio"
-              name="disk-direction"
-              value="left"
-              checked={direction === 'left'}
-              onChange={() => {
-                setDirection('left');
-                validateAndCommit(requestText, initialHeadText, minTrackText, maxTrackText, 'left', countJumpReturn);
-              }}
-            />
-            Menuju 0 (Kiri)
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
-            <input
-              type="radio"
-              name="disk-direction"
-              value="right"
-              checked={direction === 'right'}
-              onChange={() => {
-                setDirection('right');
-                validateAndCommit(requestText, initialHeadText, minTrackText, maxTrackText, 'right', countJumpReturn);
-              }}
-            />
-            Menuju Akhir (Kanan)
-          </label>
+        <label className="form-label">Metode penjadwalan</label>
+        <div className="algo-buttons">
+          {ALGORITHMS.map((algo) => (
+            <button
+              key={algo}
+              type="button"
+              id={`algo-btn-${algo}`}
+              className={`algo-btn ${algorithm === algo ? 'active' : ''}`}
+              onClick={() => onAlgorithmChange(algo)}
+            >
+              {algo}
+            </button>
+          ))}
         </div>
-        <div className="form-help">Penting untuk SCAN, C-SCAN, LOOK, C-LOOK.</div>
+        <div className="form-help" style={{ marginTop: '4px' }}>
+          {algorithm === 'FCFS' && 'FCFS melayani request sesuai urutan datang.'}
+          {algorithm === 'SSTF' && 'SSTF memilih request terdekat; arah awal tidak digunakan.'}
+          {algorithm === 'SCAN' && 'SCAN bergerak ke satu arah hingga batas, lalu berbalik.'}
+          {algorithm === 'C-SCAN' && 'C-SCAN hanya melayani satu arah, lompat ke awal setelah mencapai batas.'}
+          {algorithm === 'LOOK' && 'LOOK seperti SCAN tapi berbalik di request terjauh, bukan di batas.'}
+          {algorithm === 'C-LOOK' && 'C-LOOK seperti C-SCAN tapi lompat ke request pertama, bukan ke track 0.'}
+        </div>
       </div>
 
-      {/* Opsi Khusus C-SCAN / C-LOOK */}
-      {(algorithm === 'C-SCAN' || algorithm === 'C-LOOK') && (
-        <div className="form-group" style={{ backgroundColor: 'var(--color-bg)', padding: '6px 8px', border: '1px solid var(--color-border)' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
-            <input
-              type="checkbox"
-              checked={countJumpReturn}
-              onChange={(e) => {
-                setCountJumpReturn(e.target.checked);
-                validateAndCommit(requestText, initialHeadText, minTrackText, maxTrackText, direction, e.target.checked);
-              }}
-            />
-            Hitung jarak lompat kembali ke awal
-          </label>
-          <div className="form-help">
-            Jika dimatikan, pergerakan kembali tanpa layani dihitung sebagai zero-cost jump.
-          </div>
-        </div>
-      )}
-
-      {/* Pesan Error Validasi */}
+      {/* ── Error ── */}
       {errorMessage && (
         <div className="form-error" role="alert">
           {errorMessage}

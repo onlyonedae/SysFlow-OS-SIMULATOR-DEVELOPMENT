@@ -83,7 +83,7 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
       <div style={{ width: '100%', overflowX: 'auto' }}>
         <svg
           viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: '#fafbfc' }}
+          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: 'var(--color-chart-bg)' }}
           role="img"
           aria-label="Diagram timing aktivitas producer dan consumer"
         >
@@ -95,7 +95,7 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
               y1={padTop}
               x2={getX(tick)}
               y2={padTop + innerH}
-              stroke="#e2e8f0"
+              stroke="var(--color-chart-grid)"
               strokeDasharray="2 2"
             />
           ))}
@@ -130,8 +130,8 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
             y={producerY}
             width={innerW}
             height={rowHeight}
-            fill="#f1f5f9"
-            stroke="#cbd5e1"
+            fill="var(--color-track-bg)"
+            stroke="var(--color-track-stroke)"
             strokeWidth="1"
           />
           <rect
@@ -139,8 +139,8 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
             y={consumerY}
             width={innerW}
             height={rowHeight}
-            fill="#f1f5f9"
-            stroke="#cbd5e1"
+            fill="var(--color-track-bg)"
+            stroke="var(--color-track-stroke)"
             strokeWidth="1"
           />
 
@@ -159,7 +159,7 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
                   width={w}
                   height={rowHeight}
                   fill={isWorking ? 'var(--color-waiting)' : 'var(--color-idle)'}
-                  stroke="#ffffff"
+                  stroke="var(--color-surface)"
                   strokeWidth="0.75"
                 />
                 {w > 18 && (
@@ -194,7 +194,7 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
                   width={w}
                   height={rowHeight}
                   fill={isWorking ? 'var(--color-active)' : 'var(--color-idle)'}
-                  stroke="#ffffff"
+                  stroke="var(--color-surface)"
                   strokeWidth="0.75"
                 />
                 {w > 18 && (
@@ -220,12 +220,12 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
             y1={padTop - 4}
             x2={getX(currentTime)}
             y2={padTop + innerH + 4}
-            stroke="#0f172a"
+            stroke="var(--color-cursor)"
             strokeWidth="2"
           />
           <polygon
             points={`${getX(currentTime) - 5},${padTop - 6} ${getX(currentTime) + 5},${padTop - 6} ${getX(currentTime)},${padTop}`}
-            fill="#0f172a"
+            fill="var(--color-cursor)"
           />
 
           {/* Sumbu Waktu Bawah */}

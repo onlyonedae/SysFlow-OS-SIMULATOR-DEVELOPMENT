@@ -80,7 +80,7 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
         maxHeight: '90vh',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'none'
+        boxShadow: '0 25px 50px rgba(0,0,0,0.6)'
       }}>
         {/* Header Modal */}
         <div className="panel-header" style={{ padding: '10px 16px' }}>
@@ -175,7 +175,7 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
           </div>
 
           {/* Grafik Batang Total Head Movement */}
-          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: '#ffffff' }}>
+          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: 'var(--color-bg)' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: '8px' }}>
               Grafik Batang Perbandingan: Total Head Movement (Silinder) — Makin Pendek Makin Efisien
             </div>

@@ -11,15 +11,16 @@ import { DiskPlatterView } from './DiskPlatterView';
 import { DiskMetricsView } from './DiskMetricsView';
 import { PlaybackControls } from '../../shared/PlaybackControls';
 import { StepExplanation } from '../../shared/StepExplanation';
+import { DiskComparePanel } from './DiskComparePanel';
 
 export interface DiskModuleProps {
   onOpenCompare: (input: DiskSimulationInput) => void;
   onExportCsv: (results: DiskSimulationResult[]) => void;
 }
 
-export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportCsv }) => {
+export const DiskModule: React.FC<DiskModuleProps> = ({ onExportCsv }) => {
   // Input Default: Kasus Buku Teks Silberschatz
-  const [algorithm, setAlgorithm] = useState<DiskAlgorithm>('FCFS');
+  const [algorithm, setAlgorithm] = useState<DiskAlgorithm>('SSTF');
   const [input, setInput] = useState<DiskSimulationInput>({
     requests: [98, 183, 37, 122, 14, 124, 65, 67],
     initialHead: 53,
@@ -27,7 +28,7 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportC
     maxTrack: 199,
     direction: 'left',
     countJumpReturn: true,
-    seekTimePerCylinder: 0.5
+    seekTimePerCylinder: 0.1
   });
 
   // Jalankan simulasi murni saat input atau algoritma berubah
@@ -112,31 +113,116 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportC
   };
 
   return (
-    <div className="workspace-grid">
-      {/* Kolom 1: Panel Parameter */}
-      <section className="panel" aria-label="Pengaturan Parameter Simulasi">
-        <div className="panel-header">
-          <span>Parameter Penjadwalan Disk</span>
+    <>
+      {/* ─── Page Header ─── */}
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Penjadwalan Disk</h1>
+          <p className="page-subtitle">Telusuri keputusan algoritma, gerak head, dan waktu tunggu setiap request.</p>
         </div>
-        <DiskParamsForm
-          algorithm={algorithm}
-          onAlgorithmChange={setAlgorithm}
-          input={input}
-          onInputChange={setInput}
-        />
-      </section>
+        <span className="page-label">LAB 01 / DISK</span>
+      </div>
 
-      {/* Kolom 2: Kanvas Visualisasi Dominan & Kontrol */}
-      <section className="panel" aria-label="Visualisasi Interaktif Disk" style={{ overflowY: 'auto' }}>
-        <div className="panel-header">
-          <span>Visualisasi Pergerakan Head Disk</span>
-          <span className="mono" style={{ fontSize: '11px', color: 'var(--color-active)' }}>
-            Metode: {algorithm}
-          </span>
-        </div>
+      {/* ─── Workspace Grid Atas (3 kolom) ─── */}
+      <div className="workspace-grid">
 
-        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Visualisasi Piringan & Lengan Head */}
+        {/* ── Kolom 1: Parameter ── */}
+        <section className="panel" aria-label="Pengaturan Parameter Simulasi">
+          <div className="panel-header">
+            <span>Parameter disk</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-dim)' }}>
+              {input.requests.length} / INPUT
+            </span>
+          </div>
+          <DiskParamsForm
+            algorithm={algorithm}
+            onAlgorithmChange={setAlgorithm}
+            input={input}
+            onInputChange={setInput}
+          />
+        </section>
+
+        {/* ── Kolom 2: Grafik Jalur Head ── */}
+        <section className="panel" aria-label="Visualisasi Interaktif Disk" style={{ overflowY: 'auto' }}>
+          <div className="panel-header">
+            <span>Jalur pergerakan head</span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              color: 'var(--color-accent)',
+              fontWeight: 600
+            }}>
+              {algorithm}
+            </span>
+          </div>
+
+          {/* Chart */}
+          <div style={{ padding: '0', flex: 1 }}>
+            <DiskTrackChart
+              traces={simulationResult.traces}
+              currentStep={currentStep}
+              minTrack={input.minTrack}
+              maxTrack={input.maxTrack}
+              allRequests={input.requests}
+            />
+          </div>
+
+          {/* Kontrol Pemutaran */}
+          <PlaybackControls
+            isPlaying={isPlaying}
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            speed={speed}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onStepForward={handleStepForward}
+            onStepBackward={handleStepBackward}
+            onReset={handleReset}
+            onSpeedChange={setSpeed}
+          />
+
+          {/* Panel Step Detail */}
+          <StepExplanation
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            explanation={currentTrace?.explanation || ''}
+            headPosition={currentTrace?.headPosition}
+            distance={currentTrace?.distance}
+            isJump={currentTrace?.isJump}
+          />
+        </section>
+
+        {/* ── Kolom 3: Hasil Metrik ── */}
+        <section className="panel" aria-label="Metrik Kinerja Algoritma">
+          <div className="panel-header">
+            <span>Hasil total {algorithm}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-dim)' }}>
+              {input.requests.length} / {input.requests.length}
+            </span>
+          </div>
+          <DiskMetricsView
+            metrics={simulationResult.metrics}
+            algorithmName={simulationResult.algorithmName}
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            currentTrace={currentTrace}
+            onCompareClick={handleExportCsv}
+            onExportCsvClick={handleExportCsv}
+          />
+        </section>
+      </div>
+
+      {/* ─── Workspace Grid Bawah (platter + tabel perbandingan) ─── */}
+      <div className="workspace-bottom">
+
+        {/* ── Bawah Kiri: Platter & Actuator ── */}
+        <section className="panel" aria-label="Visualisasi Platter dan Aktuator Disk">
+          <div className="panel-header">
+            <span>Platter &amp; actuator</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-dim)' }}>
+              SKEMATIK
+            </span>
+          </div>
           <DiskPlatterView
             currentTrace={currentTrace}
             minTrack={input.minTrack}
@@ -144,54 +230,22 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportC
             allRequests={input.requests}
             isPlaying={isPlaying}
           />
+        </section>
 
-          {/* Grafik Jalur Head (X: Track, Y: Step) */}
-          <DiskTrackChart
-            traces={simulationResult.traces}
-            currentStep={currentStep}
-            minTrack={input.minTrack}
-            maxTrack={input.maxTrack}
-            allRequests={input.requests}
+        {/* ── Bawah Kanan: Tabel Perbandingan 6 Algoritma ── */}
+        <section className="panel" aria-label="Perbandingan Enam Algoritma Penjadwalan">
+          <div className="panel-header">
+            <span>Perbandingan enam algoritma</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-dim)' }}>
+              HASIL TOTAL
+            </span>
+          </div>
+          <DiskComparePanel
+            input={input}
+            activeAlgorithm={algorithm}
           />
-        </div>
-
-        {/* Kontrol Putar di Bawah Kanvas */}
-        <PlaybackControls
-          isPlaying={isPlaying}
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          speed={speed}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onReset={handleReset}
-          onSpeedChange={setSpeed}
-        />
-
-        {/* Panel Penjelasan Langkah */}
-        <StepExplanation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          explanation={currentTrace?.explanation || ''}
-          headPosition={currentTrace?.headPosition}
-          distance={currentTrace?.distance}
-          isJump={currentTrace?.isJump}
-        />
-      </section>
-
-      {/* Kolom 3: Panel Metrik Hasil */}
-      <section className="panel" aria-label="Metrik Kinerja Algoritma">
-        <div className="panel-header">
-          <span>Metrik Evaluasi Kinerja</span>
-        </div>
-        <DiskMetricsView
-          metrics={simulationResult.metrics}
-          algorithmName={simulationResult.algorithmName}
-          onCompareClick={() => onOpenCompare(input)}
-          onExportCsvClick={handleExportCsv}
-        />
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 };

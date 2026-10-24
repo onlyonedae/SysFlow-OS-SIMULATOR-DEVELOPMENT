@@ -73,42 +73,36 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
   return (
     <div style={{
       backgroundColor: 'var(--color-surface)',
-      border: '1px solid var(--color-border)',
-      borderRadius: 'var(--border-radius)',
-      padding: '14px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px'
+      gap: '0',
+      flex: 1
     }}>
+      {/* Legenda atas */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '8px'
+        gap: '6px',
+        padding: '8px 14px',
+        borderBottom: '1px solid var(--color-border)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text)' }}>
-            Grafik Jalur Pergerakan Head (Cylinder vs Waktu)
-          </span>
-          <span className="status-tag status-active" style={{ fontSize: '10px' }}>
-            Langkah Aktif: {currentStep} / {totalSteps}
-          </span>
-        </div>
-
-        {/* Legenda Simbol */}
-        <div style={{ display: 'flex', gap: '14px', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+        <span style={{ fontSize: '11px', color: 'var(--color-text-dim)' }}>
+          X: track 0–{maxTrack} &nbsp;·&nbsp; Y: urutan langkah
+        </span>
+        <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--color-text-dim)' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '9px', height: '9px', backgroundColor: 'var(--color-active)', borderRadius: '50%' }}></span>
-            Head Aktif
+            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-accent)', borderRadius: '50%' }}></span>
+            Aktif
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '9px', height: '9px', backgroundColor: 'var(--color-served)', borderRadius: '50%' }}></span>
-            Selesai (Dilayani)
+            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-served)', borderRadius: '50%' }}></span>
+            Sudah
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '9px', height: '9px', border: '1px solid var(--color-waiting)', backgroundColor: 'var(--color-waiting-bg)' }}></span>
-            Antrean Menunggu
+            <span style={{ width: '24px', height: '1px', borderTop: '2px dashed var(--color-text-dim)' }}></span>
+            Prediksi
           </span>
         </div>
       </div>
@@ -116,7 +110,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
       <div style={{ width: '100%', overflowX: 'auto' }}>
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: '#fafbfc' }}
+          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: 'var(--color-bg)' }}
           role="img"
           aria-label="Grafik pergerakan head disk terhadap langkah waktu"
         >
@@ -128,7 +122,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
               y1={paddingTop}
               x2={getX(tick)}
               y2={paddingTop + innerHeight}
-              stroke="#e2e8f0"
+              stroke="#1e2a3d"
               strokeDasharray="3 3"
             />
           ))}
@@ -140,7 +134,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
               y1={getY(step)}
               x2={paddingLeft + innerWidth}
               y2={getY(step)}
-              stroke="#e2e8f0"
+              stroke="#1e2a3d"
               strokeDasharray="3 3"
             />
           ))}
@@ -335,8 +329,8 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
                     cx={x}
                     cy={y}
                     r={isLatest ? 7 : (isHovered ? 6 : 4.5)}
-                    fill={isLatest ? 'var(--color-active)' : 'var(--color-served)'}
-                    stroke="#ffffff"
+                    fill={isLatest ? 'var(--color-accent)' : 'var(--color-served)'}
+                    stroke="#0d1117"
                     strokeWidth="1.5"
                   />
                   <text
@@ -345,7 +339,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
                     textAnchor={x > width / 2 ? 'end' : 'start'}
                     fontSize="10"
                     fontFamily="var(--font-mono)"
-                    fill={isLatest ? 'var(--color-active)' : 'var(--color-text)'}
+                    fill={isLatest ? 'var(--color-accent)' : 'var(--color-text)'}
                     fontWeight={isLatest ? '700' : '500'}
                   >
                     {trace.headPosition}

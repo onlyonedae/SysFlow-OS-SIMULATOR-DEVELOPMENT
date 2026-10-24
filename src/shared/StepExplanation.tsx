@@ -17,40 +17,81 @@ export const StepExplanation: React.FC<StepExplanationProps> = ({
   distance,
   isJump
 }) => {
+  if (currentStep === 0) {
+    return (
+      <div style={{
+        padding: '10px 14px',
+        fontSize: '11px',
+        color: 'var(--color-text-dim)',
+        borderTop: '1px solid var(--color-border)',
+        fontStyle: 'italic'
+      }}>
+        Tekan Lanjutkan atau → untuk memulai simulasi.
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      backgroundColor: 'var(--color-surface)',
-      border: '1px solid var(--color-border)',
-      borderTop: 'none',
-      padding: '10px 14px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '4px'
-    }}>
+    <div style={{ borderTop: '1px solid var(--color-border)' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '11px',
-        color: 'var(--color-text-muted)'
+        gap: '8px',
+        padding: '8px 14px',
+        backgroundColor: 'rgba(45, 212, 191, 0.06)',
+        borderBottom: '1px solid var(--color-border)',
+        flexWrap: 'wrap'
       }}>
-        <span>Status langkah ({currentStep}/{totalSteps}):</span>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {headPosition !== undefined && (
-            <span>Posisi: <strong className="mono" style={{ color: 'var(--color-active)' }}>{headPosition}</strong></span>
-          )}
-          {distance !== undefined && distance > 0 && (
-            <span>Jarak: <strong className="mono" style={{ color: isJump ? 'var(--color-waiting)' : 'var(--color-text)' }}>{distance} track</strong></span>
-          )}
-        </div>
+        <span style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '10px',
+          fontWeight: 600,
+          color: 'var(--color-accent)',
+          letterSpacing: '0.5px'
+        }}>
+          LANGKAH {currentStep} / {totalSteps}
+        </span>
+
+        {headPosition !== undefined && (
+          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+            Posisi:{' '}
+            <strong style={{
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--color-accent)',
+              fontSize: '12px'
+            }}>
+              {headPosition}
+            </strong>
+          </span>
+        )}
+
+        {distance !== undefined && distance > 0 && (
+          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+            Jarak:{' '}
+            <strong style={{
+              fontFamily: 'var(--font-mono)',
+              color: isJump ? 'var(--color-waiting)' : 'var(--color-text)',
+              fontSize: '12px'
+            }}>
+              {distance} track
+            </strong>
+            {isJump && (
+              <span style={{ color: 'var(--color-waiting)', fontSize: '10px', marginLeft: '4px' }}>
+                (lompatan)
+              </span>
+            )}
+          </span>
+        )}
       </div>
+
       <div style={{
-        fontSize: '13px',
+        padding: '8px 14px',
+        fontSize: '12px',
         color: 'var(--color-text)',
-        fontWeight: 500,
-        minHeight: '22px'
+        lineHeight: '1.5',
+        minHeight: '36px'
       }}>
-        {explanation || (currentStep === 0 ? 'Tekan Putar atau Maju untuk memulai simulasi.' : 'Simulasi selesai.')}
+        {explanation || (currentStep >= totalSteps ? 'Simulasi selesai.' : '')}
       </div>
     </div>
   );

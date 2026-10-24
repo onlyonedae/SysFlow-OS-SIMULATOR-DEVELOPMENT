@@ -179,7 +179,7 @@ export const TransferCompareModal: React.FC<TransferCompareModalProps> = ({ inpu
           </div>
 
           {/* Grafik Batang Utilisasi CPU (%) */}
-          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: '#ffffff' }}>
+          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: 'var(--color-surface)', borderRadius: 'var(--border-radius)' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: '8px' }}>
               Grafik Batang Perbandingan: Utilisasi CPU (%) — Makin Rendah Makin Bebas CPU untuk Program Lain
             </div>

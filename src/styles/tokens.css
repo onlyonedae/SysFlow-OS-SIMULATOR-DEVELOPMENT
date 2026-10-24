@@ -1,58 +1,153 @@
-:root {
-  /* Palet Warna Fungsional & Semantik */
-  --color-bg: #f1f5f9;           /* Slate 100 untuk kedalaman latar */
-  --color-surface: #ffffff;
-  --color-surface-hover: #f8fafc;
-  --color-border: #cbd5e1;       /* Slate 300 */
-  --color-border-subtle: #e2e8f0;
-  
-  --color-text: #0f172a;         /* Slate 900 */
-  --color-text-muted: #334155;   /* Slate 700 untuk kontras tinggi */
-  --color-text-dim: #64748b;     /* Slate 500 */
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS — DARK MODE (default)
+═══════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  --color-bg:           #0d1117;
+  --color-bg-2:         #111827;
+  --color-surface:      #161b27;
+  --color-surface-2:    #1e2535;
+  --color-surface-hover:#1c2333;
+  --color-border:       #253047;
+  --color-border-subtle:#1e2a3d;
+  --color-border-bright:#2e4060;
 
-  /* Warna Kanvas Instrumen / Hardware Drive */
-  --color-chassis-bg: #090d16;   /* Deep Chassis Navy/Black */
-  --color-chassis-surface: #111827;
-  --color-chassis-border: #1e293b;
-  --color-chassis-text: #f8fafc;
-  --color-chassis-muted: #94a3b8;
+  --color-text:         #e2e8f0;
+  --color-text-muted:   #8898aa;
+  --color-text-dim:     #4a6080;
 
-  /* Warna Semantik Status (Konsisten di Seluruh Modul) */
-  --color-active: #0f766e;       /* Teal 700: Head / CPU Aktif / Sedang Diproses */
-  --color-active-bright: #14b8a6;/* Teal cerah untuk aksen visual di atas kanvas gelap */
-  --color-active-bg: #f0fdfa;
-  --color-active-border: #0d9488;
+  /* Aksen Teal */
+  --color-accent:        #2dd4bf;
+  --color-accent-dim:    #14b8a6;
+  --color-accent-dark:   #0d9488;
+  --color-accent-bg:     rgba(45, 212, 191, 0.1);
+  --color-accent-bg-2:   rgba(45, 212, 191, 0.07);
+  --color-accent-border: rgba(45, 212, 191, 0.3);
 
-  --color-waiting: #b45309;      /* Amber 700: Antrean / Menunggu / Siap */
-  --color-waiting-bright: #f59e0b;
-  --color-waiting-bg: #fffbeb;
-  --color-waiting-border: #d97706;
+  --color-active:        #2dd4bf;
+  --color-active-bright: #5eead4;
+  --color-active-bg:     rgba(45, 212, 191, 0.12);
+  --color-active-border: rgba(45, 212, 191, 0.35);
 
-  --color-served: #15803d;       /* Green 700: Sudah Dilayani / Selesai */
+  --color-waiting:       #f59e0b;
+  --color-waiting-bright:#fbbf24;
+  --color-waiting-bg:    rgba(245, 158, 11, 0.1);
+  --color-waiting-border:rgba(245, 158, 11, 0.3);
+
+  --color-served:        #22c55e;
+  --color-served-bright: #4ade80;
+  --color-served-bg:     rgba(34, 197, 94, 0.1);
+  --color-served-border: rgba(34, 197, 94, 0.3);
+
+  --color-idle:          #ef4444;
+  --color-idle-bright:   #f87171;
+  --color-idle-bg:       rgba(239, 68, 68, 0.1);
+  --color-idle-border:   rgba(239, 68, 68, 0.3);
+
+  /* Chassis (hardware panel) */
+  --color-chassis-bg:      #090e1a;
+  --color-chassis-surface: #0f172a;
+  --color-chassis-border:  #1e2a3d;
+  --color-chassis-inner:   #111827;
+  --color-chassis-node:    #1e293b;
+  --color-chassis-text:    #e2e8f0;
+  --color-chassis-muted:   #4a6080;
+  --color-chassis-muted-2: #94a3b8;
+
+  /* Chart / timeline */
+  --color-chart-bg:    #0d1117;
+  --color-chart-grid:  #1e2a3d;
+  --color-track-bg:    rgba(30, 41, 59, 0.5);
+  --color-track-stroke:#253047;
+  --color-cursor:      #e2e8f0;
+  --color-timeline-free: rgba(30, 41, 59, 0.4);
+  --color-timeline-free-stroke: #253047;
+}
+
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS — LIGHT MODE
+═══════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --color-bg:           #f1f5f9;
+  --color-bg-2:         #e8edf5;
+  --color-surface:      #ffffff;
+  --color-surface-2:    #f8fafc;
+  --color-surface-hover:#f1f5f9;
+  --color-border:       #cbd5e1;
+  --color-border-subtle:#e2e8f0;
+  --color-border-bright:#94a3b8;
+
+  --color-text:         #0f172a;
+  --color-text-muted:   #475569;
+  --color-text-dim:     #94a3b8;
+
+  /* Aksen Teal (tetap konsisten) */
+  --color-accent:        #0d9488;
+  --color-accent-dim:    #0f766e;
+  --color-accent-dark:   #115e59;
+  --color-accent-bg:     rgba(13, 148, 136, 0.08);
+  --color-accent-bg-2:   rgba(13, 148, 136, 0.05);
+  --color-accent-border: rgba(13, 148, 136, 0.3);
+
+  --color-active:        #0d9488;
+  --color-active-bright: #14b8a6;
+  --color-active-bg:     rgba(13, 148, 136, 0.08);
+  --color-active-border: rgba(13, 148, 136, 0.3);
+
+  --color-waiting:       #d97706;
+  --color-waiting-bright:#f59e0b;
+  --color-waiting-bg:    rgba(217, 119, 6, 0.08);
+  --color-waiting-border:rgba(217, 119, 6, 0.3);
+
+  --color-served:        #15803d;
   --color-served-bright: #22c55e;
-  --color-served-bg: #f0fdf4;
-  --color-served-border: #16a34a;
+  --color-served-bg:     rgba(21, 128, 61, 0.08);
+  --color-served-border: rgba(21, 128, 61, 0.3);
 
-  --color-idle: #b91c1c;         /* Red 700: CPU Idle / Hambatan / Starvation */
-  --color-idle-bright: #ef4444;
-  --color-idle-bg: #fef2f2;
-  --color-idle-border: #dc2626;
+  --color-idle:          #dc2626;
+  --color-idle-bright:   #ef4444;
+  --color-idle-bg:       rgba(220, 38, 38, 0.08);
+  --color-idle-border:   rgba(220, 38, 38, 0.3);
 
-  /* Tipografi */
-  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'Cascadia Code', 'Courier New', monospace;
+  /* Chassis (light mode: abu-abu terang, tetap technical) */
+  --color-chassis-bg:      #1e293b;
+  --color-chassis-surface: #334155;
+  --color-chassis-border:  #475569;
+  --color-chassis-inner:   #1e293b;
+  --color-chassis-node:    #334155;
+  --color-chassis-text:    #f8fafc;
+  --color-chassis-muted:   #94a3b8;
+  --color-chassis-muted-2: #cbd5e1;
 
-  /* Spasi & Ukuran */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
-  
-  --border-radius: 4px;
+  /* Chart */
+  --color-chart-bg:    #f8fafc;
+  --color-chart-grid:  #e2e8f0;
+  --color-track-bg:    #f1f5f9;
+  --color-track-stroke:#cbd5e1;
+  --color-cursor:      #0f172a;
+  --color-timeline-free: #f1f5f9;
+  --color-timeline-free-stroke: #cbd5e1;
+}
 
-  /* Transisi Halus untuk Interaksi & Animasi Mekanik */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+/* ═══════════════════════════════════════════════════
+   FONT & TIPOGRAFI
+═══════════════════════════════════════════════════ */
+:root {
+  --font-sans: 'Inter', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Code', 'JetBrains Mono', monospace;
+
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   12px;
+  --space-lg:   16px;
+  --space-xl:   20px;
+  --space-2xl:  24px;
+
+  --border-radius:    4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+
+  --transition-fast:       150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal:     250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-mechanical: 420ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }

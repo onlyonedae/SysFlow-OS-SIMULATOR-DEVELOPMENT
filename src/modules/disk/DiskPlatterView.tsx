@@ -44,39 +44,11 @@ export const DiskPlatterView: React.FC<DiskPlatterViewProps> = ({
   const isMoving = currentTrace && currentTrace.distance > 0;
 
   return (
-    <div className="hardware-chassis">
-      {/* Header Instrumen Drive */}
-      <div className="hardware-chassis-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="status-dot active"></span>
-          <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px' }}>
-            MEKANISME FISIK HARD DISK DRIVE
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '16px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
-          <span style={{ color: 'var(--color-chassis-muted)' }}>
-            STATUS:{' '}
-            <strong style={{ color: isServingNow ? 'var(--color-served-bright)' : (isMoving ? 'var(--color-waiting-bright)' : 'var(--color-chassis-text)') }}>
-              {isServingNow ? 'MEMBACA / MENULIS' : (isMoving ? 'SEEKING' : 'IDLE')}
-            </strong>
-          </span>
-          <span style={{ color: 'var(--color-chassis-muted)' }}>
-            TRACK:{' '}
-            <strong style={{ color: 'var(--color-active-bright)' }}>
-              {headPos}
-            </strong>
-          </span>
-          <span style={{ color: 'var(--color-chassis-muted)' }}>
-            SPINDLE:{' '}
-            <strong style={{ color: isPlaying ? 'var(--color-served-bright)' : 'var(--color-chassis-muted)' }}>
-              {isPlaying ? '7200 RPM' : 'BERHENTI'}
-            </strong>
-          </span>
-        </div>
-      </div>
-
-      {/* Kanvas Drive SVG */}
-      <div style={{ padding: '8px', position: 'relative' }}>
+    <div className="hardware-chassis" style={{ flex: 1 }}>
+      {/* Platter area + info side-by-side */}
+      <div style={{ display: 'flex', height: '100%' }}>
+        {/* SVG area */}
+        <div style={{ flex: 1, padding: '8px', position: 'relative' }}>
         <svg
           viewBox="0 0 480 270"
           style={{
@@ -392,6 +364,72 @@ export const DiskPlatterView: React.FC<DiskPlatterViewProps> = ({
             </text>
           </g>
         </svg>
+      </div>
+
+        {/* Info sidebar kanan */}
+        <div style={{
+          width: '130px',
+          borderLeft: '1px solid var(--color-chassis-border)',
+          padding: '14px 12px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          justifyContent: 'center'
+        }}>
+          {/* Cylinder aktif - angka besar */}
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '36px',
+              fontWeight: 700,
+              color: 'var(--color-accent)',
+              lineHeight: 1,
+              letterSpacing: '-1px'
+            }}>
+              {headPos}
+            </div>
+            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted)', marginTop: '4px' }}>
+              Silinder aktif
+            </div>
+          </div>
+
+          {/* t = seek time */}
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '13px',
+              color: 'var(--color-text-muted)'
+            }}>
+              t = {isMoving && currentTrace
+                ? (currentTrace.distance * 0.1).toFixed(1)
+                : '0.0'} ms
+            </div>
+          </div>
+
+          <div style={{
+            fontSize: '10px',
+            color: 'var(--color-chassis-muted)',
+            lineHeight: '1.5',
+            borderTop: '1px solid var(--color-chassis-border)',
+            paddingTop: '8px'
+          }}>
+            Rotasi hanya ilustrasi; tidak dihitung sebagai seek.
+          </div>
+
+          {/* Status dot */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="status-dot active" style={{
+              backgroundColor: isServingNow
+                ? 'var(--color-served)'
+                : isMoving
+                ? 'var(--color-waiting)'
+                : 'var(--color-accent)'
+            }} />
+            <span style={{ fontSize: '10px', color: 'var(--color-chassis-muted)', fontFamily: 'var(--font-mono)' }}>
+              {isServingNow ? 'R/W' : isMoving ? 'SEEK' : 'IDLE'}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

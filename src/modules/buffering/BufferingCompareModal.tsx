@@ -176,7 +176,7 @@ export const BufferingCompareModal: React.FC<BufferingCompareModalProps> = ({ in
           </div>
 
           {/* Grafik Batang Total Waktu Selesai */}
-          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: '#ffffff' }}>
+          <div style={{ border: '1px solid var(--color-border)', padding: '12px', backgroundColor: 'var(--color-surface)', borderRadius: 'var(--border-radius)' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: '8px' }}>
               Grafik Batang Perbandingan: Total Waktu Selesai (ms) — Makin Rendah Makin Cepat
             </div>
