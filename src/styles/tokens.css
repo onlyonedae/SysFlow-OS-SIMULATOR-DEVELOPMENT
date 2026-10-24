@@ -1,0 +1,58 @@
+:root {
+  /* Palet Warna Fungsional & Semantik */
+  --color-bg: #f1f5f9;           /* Slate 100 untuk kedalaman latar */
+  --color-surface: #ffffff;
+  --color-surface-hover: #f8fafc;
+  --color-border: #cbd5e1;       /* Slate 300 */
+  --color-border-subtle: #e2e8f0;
+  
+  --color-text: #0f172a;         /* Slate 900 */
+  --color-text-muted: #334155;   /* Slate 700 untuk kontras tinggi */
+  --color-text-dim: #64748b;     /* Slate 500 */
+
+  /* Warna Kanvas Instrumen / Hardware Drive */
+  --color-chassis-bg: #090d16;   /* Deep Chassis Navy/Black */
+  --color-chassis-surface: #111827;
+  --color-chassis-border: #1e293b;
+  --color-chassis-text: #f8fafc;
+  --color-chassis-muted: #94a3b8;
+
+  /* Warna Semantik Status (Konsisten di Seluruh Modul) */
+  --color-active: #0f766e;       /* Teal 700: Head / CPU Aktif / Sedang Diproses */
+  --color-active-bright: #14b8a6;/* Teal cerah untuk aksen visual di atas kanvas gelap */
+  --color-active-bg: #f0fdfa;
+  --color-active-border: #0d9488;
+
+  --color-waiting: #b45309;      /* Amber 700: Antrean / Menunggu / Siap */
+  --color-waiting-bright: #f59e0b;
+  --color-waiting-bg: #fffbeb;
+  --color-waiting-border: #d97706;
+
+  --color-served: #15803d;       /* Green 700: Sudah Dilayani / Selesai */
+  --color-served-bright: #22c55e;
+  --color-served-bg: #f0fdf4;
+  --color-served-border: #16a34a;
+
+  --color-idle: #b91c1c;         /* Red 700: CPU Idle / Hambatan / Starvation */
+  --color-idle-bright: #ef4444;
+  --color-idle-bg: #fef2f2;
+  --color-idle-border: #dc2626;
+
+  /* Tipografi */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Code', 'Courier New', monospace;
+
+  /* Spasi & Ukuran */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  
+  --border-radius: 4px;
+
+  /* Transisi Halus untuk Interaksi & Animasi Mekanik */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-mechanical: 420ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
