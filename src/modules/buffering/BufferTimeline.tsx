@@ -12,9 +12,9 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
   currentTime,
   totalTime
 }) => {
-  const chartWidth = 640;
+  const chartWidth = 700;
   const chartHeight = 150;
-  const padLeft = 90;
+  const padLeft = 135;
   const padRight = 30;
   const padTop = 25;
   const padBottom = 35;

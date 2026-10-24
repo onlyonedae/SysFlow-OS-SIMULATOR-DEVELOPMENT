@@ -245,7 +245,7 @@ body {
 /* Layout bawah: platter + tabel perbandingan */
 .workspace-bottom {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: minmax(460px, 44%) 1fr;
   background-color: var(--color-border-subtle);
   gap: 1px;
   border-top: 1px solid var(--color-border-subtle);
@@ -254,6 +254,9 @@ body {
 @media (max-width: 1200px) {
   .workspace-grid {
     grid-template-columns: 240px 1fr 290px;
+  }
+  .workspace-bottom {
+    grid-template-columns: minmax(420px, 45%) 1fr;
   }
 }
 

@@ -12,9 +12,9 @@ export const TimingDiagram: React.FC<TimingDiagramProps> = ({
   currentTime,
   totalTime
 }) => {
-  const chartWidth = 660;
+  const chartWidth = 700;
   const chartHeight = 180;
-  const padLeft = 100;
+  const padLeft = 125;
   const padRight = 30;
   const padTop = 20;
   const padBottom = 35;
