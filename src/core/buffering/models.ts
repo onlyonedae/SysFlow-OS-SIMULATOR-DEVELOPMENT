@@ -118,6 +118,7 @@ export function simulateBuffering(input: BufferingSimulationInput): BufferingSim
     // BUFFERED (Single, Double, Circular) - Event Driven Discrete Simulation
     let completedCount = 0;
     let producerSlot: number | null = null;
+    let consumerSlot: number | null = null;
 
     // Mulai produce item 1 jika ada slot kosong
     if (emptySlots.length > 0 && producerItemIndex <= itemCount) {
@@ -151,6 +152,14 @@ export function simulateBuffering(input: BufferingSimulationInput): BufferingSim
         completedCount++;
         const prevItem = consumerCurrentItem;
         consumerCurrentItem = null;
+
+        // Bebaskan slot buffer sistem setelah consumer selesai memproses
+        if (consumerSlot !== null) {
+          slots[consumerSlot].status = 'empty';
+          slots[consumerSlot].itemId = null;
+          emptySlots.push(consumerSlot);
+          consumerSlot = null;
+        }
 
         traces.push({
           stepIndex: traces.length,
@@ -192,17 +201,15 @@ export function simulateBuffering(input: BufferingSimulationInput): BufferingSim
       }
 
       // 3. Jika Consumer menganggur dan ada buffer terisi:
-      // OS memindahkan data ke ruang proses user (slot buffer kembali KOSONG untuk producer berikutnya)
       if (consumerCurrentItem === null && filledBuffers.length > 0) {
         const buf = filledBuffers.shift()!;
         consumerCurrentItem = buf.itemId;
+        consumerSlot = buf.slotIndex;
         consumerBusyUntil = time + consumeTime;
         consumerTimeline.push({ actor: 'consumer', state: 'working', startTime: time, endTime: consumerBusyUntil, itemId: consumerCurrentItem });
 
-        // Slot buffer sistem langsung bebas untuk diisi kembali oleh producer
-        slots[buf.slotIndex].status = 'empty';
-        slots[buf.slotIndex].itemId = null;
-        emptySlots.push(buf.slotIndex);
+        // Slot buffer sistem ditandai sedang dikosongkan (tetap terisi sampai consumer selesai memproses)
+        slots[buf.slotIndex].status = 'emptying';
 
         traces.push({
           stepIndex: traces.length,
@@ -213,7 +220,7 @@ export function simulateBuffering(input: BufferingSimulationInput): BufferingSim
           consumerCurrentItem,
           slots: JSON.parse(JSON.stringify(slots)),
           completedItemsCount: completedCount,
-          explanation: `Pada t=${time} ms: Consumer mengambil item ${consumerCurrentItem} dari slot ${buf.slotIndex + 1}. Slot sistem bebas kembali, Consumer mulai komputasi (${consumeTime} ms).`,
+          explanation: `Pada t=${time} ms: Consumer mengambil item ${consumerCurrentItem} dari slot ${buf.slotIndex + 1} dan mulai memproses (${consumeTime} ms).`,
           producerIdleTotal,
           consumerIdleTotal
         });
