@@ -3,6 +3,7 @@ import { simulateFCFS } from './fcfs';
 import { simulateSSTF } from './sstf';
 import { simulateSCAN, simulateCSCAN } from './scan';
 import { simulateLOOK, simulateCLOOK } from './look';
+import { sanitizeDiskInput } from './validation';
 import type { DiskSimulationInput } from './types';
 
 describe('Penjadwalan Disk - Uji Kasus Buku Teks Silberschatz', () => {
@@ -83,5 +84,20 @@ describe('Penjadwalan Disk - Uji Kasus Buku Teks Silberschatz', () => {
     expect(result.metrics.estimatedSeekTime).toBe(640 * 0.5); // 320 ms
     expect(result.metrics.avgWaitingTime).toBeGreaterThan(0);
     expect(result.metrics.maxWaitingTime).toBeGreaterThan(0);
+  });
+
+  it('Sanitasi input harus membersihkan track di luar batas jangkauan dan nilai NaN', () => {
+    const invalidInput: DiskSimulationInput = {
+      requests: [98, NaN, 250, -5, 122],
+      initialHead: 53,
+      minTrack: 0,
+      maxTrack: 199,
+      direction: 'left',
+      countJumpReturn: true
+    };
+    const sanitized = sanitizeDiskInput(invalidInput);
+    expect(sanitized.requests).toEqual([98, 122]);
+    expect(sanitized.minTrack).toBe(0);
+    expect(sanitized.maxTrack).toBe(199);
   });
 });

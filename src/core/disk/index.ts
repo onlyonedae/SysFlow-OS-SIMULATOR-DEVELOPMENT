@@ -3,8 +3,10 @@ import { simulateFCFS } from './fcfs';
 import { simulateSSTF } from './sstf';
 import { simulateSCAN, simulateCSCAN } from './scan';
 import { simulateLOOK, simulateCLOOK } from './look';
+import { sanitizeDiskInput } from './validation';
 
 export * from './types';
+export * from './validation';
 export { simulateFCFS } from './fcfs';
 export { simulateSSTF } from './sstf';
 export { simulateSCAN, simulateCSCAN } from './scan';
@@ -14,7 +16,8 @@ export type DiskAlgorithm = 'FCFS' | 'SSTF' | 'SCAN' | 'C-SCAN' | 'LOOK' | 'C-LO
 
 export const DEFAULT_SEEK_TIME_PER_CYLINDER = 0.5; // ms per track
 
-export function runDiskSimulation(algorithm: DiskAlgorithm, input: DiskSimulationInput): DiskSimulationResult {
+export function runDiskSimulation(algorithm: DiskAlgorithm, rawInput: DiskSimulationInput): DiskSimulationResult {
+  const input = sanitizeDiskInput(rawInput);
   switch (algorithm) {
     case 'FCFS':
       return simulateFCFS(input);
