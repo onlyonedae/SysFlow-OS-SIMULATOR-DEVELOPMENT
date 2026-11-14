@@ -121,16 +121,14 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
           {input.requests.map((req, idx) => (
             <span key={`chip-${idx}-${req}`} className="request-chip">
               {req}
-              <span
+              <button
+                type="button"
                 className="chip-del"
-                role="button"
-                tabIndex={0}
                 aria-label={`Hapus request ${req}`}
                 onClick={() => handleRemoveRequest(idx)}
-                onKeyDown={(e) => e.key === 'Enter' && handleRemoveRequest(idx)}
               >
                 ×
-              </span>
+              </button>
             </span>
           ))}
         </div>
@@ -196,6 +194,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
           <button
             type="button"
             className={`dir-btn ${direction === 'left' ? 'active' : ''}`}
+            aria-pressed={direction === 'left'}
             onClick={() => {
               setDirection('left');
               commitHeadAndRange(initialHeadText, maxTrackText, 'left', countJumpReturn);
@@ -206,6 +205,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
           <button
             type="button"
             className={`dir-btn ${direction === 'right' ? 'active' : ''}`}
+            aria-pressed={direction === 'right'}
             onClick={() => {
               setDirection('right');
               commitHeadAndRange(initialHeadText, maxTrackText, 'right', countJumpReturn);
@@ -249,6 +249,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
               type="button"
               id={`algo-btn-${algo}`}
               className={`algo-btn ${algorithm === algo ? 'active' : ''}`}
+              aria-pressed={algorithm === algo}
               onClick={() => onAlgorithmChange(algo)}
             >
               {algo}

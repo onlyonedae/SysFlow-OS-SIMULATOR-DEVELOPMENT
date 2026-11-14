@@ -337,6 +337,9 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
   transition: color var(--transition-fast);
 }
 
