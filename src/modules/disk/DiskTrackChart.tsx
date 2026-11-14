@@ -78,39 +78,39 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
       gap: '0',
       flex: 1
     }}>
-      {/* Legenda atas */}
+      {/* Legenda atas sesuai Figma */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '6px',
-        padding: '8px 14px',
-        borderBottom: '1px solid var(--color-border)'
+        padding: '10px 16px',
+        borderBottom: '1px solid var(--color-rule)'
       }}>
-        <span style={{ fontSize: '11px', color: 'var(--color-text-dim)' }}>
-          X: track 0–{maxTrack} &nbsp;·&nbsp; Y: urutan langkah
-        </span>
-        <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--color-text-dim)' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-accent)', borderRadius: '50%' }}></span>
-            Aktif
+        <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--color-ink2)' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '16px', height: '2px', backgroundColor: 'var(--color-ink)', display: 'inline-block' }}></span>
+            jalur tempuh
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-served)', borderRadius: '50%' }}></span>
-            Sudah
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-head-mark)', borderRadius: '50%', display: 'inline-block' }}></span>
+            head saat ini
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '24px', height: '1px', borderTop: '2px dashed var(--color-text-dim)' }}></span>
-            Prediksi
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '7px', height: '7px', border: '1.5px solid var(--color-ink3)', borderRadius: '50%', display: 'inline-block' }}></span>
+            request
           </span>
         </div>
+        <span className="mono" style={{ fontSize: '11px', color: 'var(--color-ink3)' }}>
+          silinder 0–{maxTrack}
+        </span>
       </div>
 
-      <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div style={{ width: '100%', overflowX: 'auto', padding: '12px 16px' }}>
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: 'var(--color-bg)' }}
+          style={{ width: '100%', height: 'auto', display: 'block', backgroundColor: 'var(--color-plot)', border: '1px solid var(--color-rule)', borderRadius: '2px' }}
           role="img"
           aria-label="Grafik pergerakan head disk terhadap langkah waktu"
         >
@@ -122,7 +122,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
               y1={paddingTop}
               x2={getX(tick)}
               y2={paddingTop + innerHeight}
-              stroke="#1e2a3d"
+              stroke="var(--color-chart-grid)"
               strokeDasharray="3 3"
             />
           ))}
@@ -134,7 +134,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
               y1={getY(step)}
               x2={paddingLeft + innerWidth}
               y2={getY(step)}
-              stroke="#1e2a3d"
+              stroke="var(--color-chart-grid)"
               strokeDasharray="3 3"
             />
           ))}
@@ -312,25 +312,22 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
                   onMouseLeave={() => setHoveredPoint(null)}
                   style={{ cursor: 'pointer' }}
                 >
-                  {/* Animasi Halo Radar jika ini langkah aktif */}
+                  {/* Halo Amber jika ini langkah aktif sesuai Figma */}
                   {isLatest && (
                     <circle
                       cx={x}
                       cy={y}
-                      r="12"
-                      fill="none"
-                      stroke="var(--color-active)"
-                      strokeWidth="2"
-                      opacity="0.6"
-                      className="head-scanner-beam"
+                      r="11"
+                      fill="var(--color-head-mark)"
+                      opacity="0.16"
                     />
                   )}
                   <circle
                     cx={x}
                     cy={y}
-                    r={isLatest ? 7 : (isHovered ? 6 : 4.5)}
-                    fill={isLatest ? 'var(--color-accent)' : 'var(--color-served)'}
-                    stroke="#0d1117"
+                    r={isLatest ? 6.5 : (isHovered ? 5 : 3.5)}
+                    fill={isLatest ? 'var(--color-head-mark)' : 'var(--color-ink)'}
+                    stroke="var(--color-plot)"
                     strokeWidth="1.5"
                   />
                   <text
@@ -339,7 +336,7 @@ export const DiskTrackChart: React.FC<DiskTrackChartProps> = ({
                     textAnchor={x > width / 2 ? 'end' : 'start'}
                     fontSize="10"
                     fontFamily="var(--font-mono)"
-                    fill={isLatest ? 'var(--color-accent)' : 'var(--color-text)'}
+                    fill={isLatest ? 'var(--color-head-mark)' : 'var(--color-ink)'}
                     fontWeight={isLatest ? '700' : '500'}
                   >
                     {trace.headPosition}

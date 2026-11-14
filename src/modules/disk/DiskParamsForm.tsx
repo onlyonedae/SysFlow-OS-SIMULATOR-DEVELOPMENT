@@ -21,7 +21,9 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
   const [maxTrackText, setMaxTrackText] = useState(String(input.maxTrack));
   const [direction, setDirection] = useState<Direction>(input.direction);
   const [countJumpReturn, setCountJumpReturn] = useState<boolean>(input.countJumpReturn);
+  const [newTrackText, setNewTrackText] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeScenario, setActiveScenario] = useState<'buku' | 'kluster' | 'acak'>('buku');
 
   // Perbarui saat input eksternal berubah
   useEffect(() => {
@@ -40,6 +42,22 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
     }
     setErrorMessage(null);
     onInputChange({ ...input, requests: updated });
+  };
+
+  const handleAddTrack = () => {
+    const val = parseInt(newTrackText.trim(), 10);
+    if (isNaN(val)) {
+      setErrorMessage('Nomor track harus angka.');
+      return;
+    }
+    const maxVal = parseInt(maxTrackText, 10) || 199;
+    if (val < input.minTrack || val > maxVal) {
+      setErrorMessage(`Track harus berada dalam rentang ${input.minTrack}–${maxVal}.`);
+      return;
+    }
+    setErrorMessage(null);
+    onInputChange({ ...input, requests: [...input.requests, val] });
+    setNewTrackText('');
   };
 
   // Validasi dan commit perubahan head/track
@@ -74,6 +92,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
   };
 
   const handleGenerateRandom = () => {
+    setActiveScenario('acak');
     const minVal = input.minTrack;
     const maxVal = parseInt(maxTrackText, 10) || 199;
     const count = 8;
@@ -93,6 +112,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
   };
 
   const handleApplyTextbookExample = () => {
+    setActiveScenario('buku');
     setInitialHeadText('53');
     setMaxTrackText('199');
     setDirection('left');
@@ -109,22 +129,124 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
     });
   };
 
-  return (
-    <div className="panel-body">
+  const handleApplyStarvationExample = () => {
+    setActiveScenario('kluster');
+    setInitialHeadText('50');
+    setMaxTrackText('199');
+    setDirection('right');
+    setCountJumpReturn(true);
+    setErrorMessage(null);
+    onInputChange({
+      requests: [50, 52, 48, 55, 51, 180, 195],
+      initialHead: 50,
+      minTrack: 0,
+      maxTrack: 199,
+      direction: 'right',
+      countJumpReturn: true,
+      seekTimePerCylinder: input.seekTimePerCylinder ?? DEFAULT_SEEK_TIME_PER_CYLINDER
+    });
+  };
 
-      {/* ── Antrean Request (Chips) ── */}
-      <div className="form-group">
-        <label className="form-label">
-          <span>Antrean · {input.requests.length} request</span>
-          <span className="form-label-hint">0–{input.maxTrack}</span>
-        </label>
-        <div className="request-chips">
+  const getAlgoExplanation = (algo: DiskAlgorithm) => {
+    switch (algo) {
+      case 'FCFS': return 'Melayani request sesuai urutan kedatangan antrean.';
+      case 'SSTF': return 'Memilih request terdekat dari posisi head.';
+      case 'SCAN': return 'Menyapu silinder ke satu arah hingga ujung, lalu berbalik.';
+      case 'C-SCAN': return 'Menyapu ke satu arah saja, lompat kembali ke ujung awal tanpa melayani.';
+      case 'LOOK': return 'Menyapu ke arah target hingga request terakhir, berbalik tanpa ke track 0/199.';
+      case 'C-LOOK': return 'Menyapu satu arah hingga request terakhir, lalu lompat ke request terendah.';
+      default: return '';
+    }
+  };
+
+  return (
+    <div className="instrument-panel-body">
+
+      {/* ── 1. Metode (Grid 3x2) ── */}
+      <div className="control-group">
+        <label className="control-label">Metode</label>
+        <div className="method-grid">
+          {ALGORITHMS.map((algo) => (
+            <button
+              key={algo}
+              type="button"
+              className={`choice-btn ${algorithm === algo ? 'active' : ''}`}
+              onClick={() => onAlgorithmChange(algo)}
+            >
+              {algo}
+            </button>
+          ))}
+        </div>
+        <div className="control-caption">
+          {getAlgoExplanation(algorithm)}
+        </div>
+      </div>
+
+      <div className="rule-divider" />
+
+      {/* ── 2. Skenario ── */}
+      <div className="control-group">
+        <label className="control-label">Skenario</label>
+        <div className="scenario-row">
+          <button
+            type="button"
+            className={`choice-btn ${activeScenario === 'buku' ? 'active' : ''}`}
+            onClick={handleApplyTextbookExample}
+          >
+            Buku teks
+          </button>
+          <button
+            type="button"
+            className={`choice-btn ${activeScenario === 'kluster' ? 'active' : ''}`}
+            onClick={handleApplyStarvationExample}
+          >
+            Kluster jauh
+          </button>
+          <button
+            type="button"
+            className={`choice-btn ${activeScenario === 'acak' ? 'active' : ''}`}
+            onClick={handleGenerateRandom}
+          >
+            Acak
+          </button>
+        </div>
+        <div className="control-caption">
+          {activeScenario === 'buku' && (
+            <>
+              Buku teks: head 53, 8 request (Silberschatz).<br />
+              Amati: total gerak LOOK 208 vs FCFS 640.
+            </>
+          )}
+          {activeScenario === 'kluster' && (
+            <>
+              Kluster dekat 50–55 vs jauh 180–195.<br />
+              Amati fenomena starvation pada SSTF.
+            </>
+          )}
+          {activeScenario === 'acak' && (
+            <>
+              Antrean acak 8 silinder acak.<br />
+              Evaluasi kinerja komparatif.
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="rule-divider" />
+
+      {/* ── 3. Antrean ── */}
+      <div className="control-group">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+          <label className="control-label" style={{ margin: 0 }}>Antrean</label>
+          <span className="mono" style={{ fontSize: '12px', color: 'var(--color-ink3)' }}>0–{input.maxTrack}</span>
+        </div>
+        <div className="chips-grid">
           {input.requests.map((req, idx) => (
-            <span key={`chip-${idx}-${req}`} className="request-chip">
+            <span key={`chip-${idx}-${req}`} className="instrument-chip">
               {req}
               <button
                 type="button"
-                className="chip-del"
+                className="chip-remove"
                 aria-label={`Hapus request ${req}`}
                 onClick={() => handleRemoveRequest(idx)}
               >
@@ -133,34 +255,40 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
             </span>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+        <div className="add-track-row">
+          <input
+            type="number"
+            className="track-input"
+            placeholder="Tambah track…"
+            value={newTrackText}
+            onChange={(e) => setNewTrackText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddTrack();
+              }
+            }}
+          />
           <button
             type="button"
-            className="btn btn-sm"
-            onClick={handleApplyTextbookExample}
-            title="Muat contoh standar dari buku teks Silberschatz"
+            className="action-btn"
+            onClick={handleAddTrack}
           >
-            Contoh Buku
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={handleGenerateRandom}
-            title="Buat antrean acak"
-          >
-            Acak
+            Tambah
           </button>
         </div>
       </div>
 
-      {/* ── Head Awal & Rentang Track ── */}
-      <div className="form-input-row">
-        <div className="form-group">
-          <label className="form-label" htmlFor="disk-head-input">Head awal</label>
+      <div className="rule-divider" />
+
+      {/* ── 4. Head awal & Rentang track ── */}
+      <div className="two-cols-row">
+        <div className="control-group">
+          <label className="control-label" htmlFor="disk-head-input">Head awal</label>
           <input
             id="disk-head-input"
             type="number"
-            className="form-input"
+            className="field-input"
             value={initialHeadText}
             onChange={(e) => {
               setInitialHeadText(e.target.value);
@@ -168,11 +296,11 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
             }}
           />
         </div>
-        <div className="form-group">
-          <label className="form-label" htmlFor="disk-range-select">Rentang track</label>
+        <div className="control-group">
+          <label className="control-label" htmlFor="disk-range-select">Rentang track</label>
           <select
             id="disk-range-select"
-            className="form-select"
+            className="field-select"
             value={`0-${maxTrackText}`}
             onChange={(e) => {
               const val = e.target.value.split('-')[1];
@@ -188,14 +316,13 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
         </div>
       </div>
 
-      {/* ── Arah Awal (SCAN/LOOK) ── */}
-      <div className="form-group">
-        <label className="form-label">Arah awal · keluarga SCAN / LOOK</label>
-        <div className="direction-buttons">
+      {/* ── 5. Arah awal ── */}
+      <div className="control-group">
+        <label className="control-label">Arah awal</label>
+        <div className="two-cols-row">
           <button
             type="button"
-            className={`dir-btn ${direction === 'left' ? 'active' : ''}`}
-            aria-pressed={direction === 'left'}
+            className={`choice-btn ${direction === 'left' ? 'active' : ''}`}
             onClick={() => {
               setDirection('left');
               commitHeadAndRange(initialHeadText, maxTrackText, 'left', countJumpReturn);
@@ -205,8 +332,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
           </button>
           <button
             type="button"
-            className={`dir-btn ${direction === 'right' ? 'active' : ''}`}
-            aria-pressed={direction === 'right'}
+            className={`choice-btn ${direction === 'right' ? 'active' : ''}`}
             onClick={() => {
               setDirection('right');
               commitHeadAndRange(initialHeadText, maxTrackText, 'right', countJumpReturn);
@@ -217,12 +343,9 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
         </div>
       </div>
 
-      {/* ── Opsi C-SCAN / C-LOOK ── */}
-      <div className="form-group">
-        <label
-          className="checkbox-group"
-          style={{ cursor: 'pointer' }}
-        >
+      {/* ── 6. Checkbox Opsi C-SCAN ── */}
+      <div className="control-group" style={{ marginTop: '4px' }}>
+        <label className="checkbox-label">
           <input
             type="checkbox"
             checked={countJumpReturn}
@@ -231,45 +354,18 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
               commitHeadAndRange(initialHeadText, maxTrackText, direction, e.target.checked);
             }}
           />
-          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: '1.4' }}>
-            Hitung lompatan C-SCAN / C-LOOK
+          <span style={{ fontSize: '13px', color: 'var(--color-ink2)', lineHeight: '1.4' }}>
+            Hitung lompatan balik C-SCAN / C-LOOK
           </span>
         </label>
-        <div className="form-help" style={{ paddingLeft: '21px' }}>
-          Jarak kembali disertakan pada hasil.
-        </div>
-      </div>
-
-      {/* ── Pilihan Metode ── */}
-      <div className="form-group">
-        <label className="form-label">Metode penjadwalan</label>
-        <div className="algo-buttons">
-          {ALGORITHMS.map((algo) => (
-            <button
-              key={algo}
-              type="button"
-              id={`algo-btn-${algo}`}
-              className={`algo-btn ${algorithm === algo ? 'active' : ''}`}
-              aria-pressed={algorithm === algo}
-              onClick={() => onAlgorithmChange(algo)}
-            >
-              {algo}
-            </button>
-          ))}
-        </div>
-        <div className="form-help" style={{ marginTop: '4px' }}>
-          {algorithm === 'FCFS' && 'FCFS melayani request sesuai urutan datang.'}
-          {algorithm === 'SSTF' && 'SSTF memilih request terdekat; arah awal tidak digunakan.'}
-          {algorithm === 'SCAN' && 'SCAN bergerak ke satu arah hingga batas, lalu berbalik.'}
-          {algorithm === 'C-SCAN' && 'C-SCAN hanya melayani satu arah, lompat ke awal setelah mencapai batas.'}
-          {algorithm === 'LOOK' && 'LOOK seperti SCAN tapi berbalik di request terjauh, bukan di batas.'}
-          {algorithm === 'C-LOOK' && 'C-LOOK seperti C-SCAN tapi lompat ke request pertama, bukan ke track 0.'}
+        <div className="control-caption" style={{ paddingLeft: '22px' }}>
+          Dihitung sebagai jarak penuh 0 → 199.
         </div>
       </div>
 
       {/* ── Error ── */}
       {errorMessage && (
-        <div className="form-error" role="alert">
+        <div className="instrument-error" role="alert">
           {errorMessage}
         </div>
       )}
