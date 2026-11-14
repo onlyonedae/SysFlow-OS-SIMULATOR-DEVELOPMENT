@@ -5,6 +5,7 @@ import type {
   BufferingSimulationResult
 } from '../../core/buffering';
 import { downloadCsv } from '../../utils/exportCsv';
+import { Modal } from '../../shared/Modal';
 
 export interface BufferingCompareModalProps {
   input: BufferingSimulationInput;
@@ -60,39 +61,10 @@ export const BufferingCompareModal: React.FC<BufferingCompareModalProps> = ({ in
   const barWidth = Math.floor(innerW / results.length) - 18;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-        width: '100%',
-        maxWidth: '820px',
-        maxHeight: '90vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        <div className="panel-header" style={{ padding: '10px 16px' }}>
-          <span>Perbandingan Kinerja Strategi Buffering</span>
-          <button type="button" className="btn btn-sm" onClick={onClose} aria-label="Tutup modal">
-            Tutup [Esc]
-          </button>
-        </div>
-
-        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-            Jumlah Item: <span className="mono">{input.itemCount}</span> | Produce (T): <span className="mono">{input.produceTime} ms</span> | Consume (C): <span className="mono">{input.consumeTime} ms</span>
-          </div>
+    <Modal title="Perbandingan Kinerja Strategi Buffering" onClose={onClose}>
+      <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+        Jumlah Item: <span className="mono">{input.itemCount}</span> | Produce (T): <span className="mono">{input.produceTime} ms</span> | Consume (C): <span className="mono">{input.consumeTime} ms</span>
+      </div>
 
           {/* Tabel Perbandingan */}
           <div style={{ overflowX: 'auto' }}>
@@ -252,7 +224,6 @@ export const BufferingCompareModal: React.FC<BufferingCompareModalProps> = ({ in
               </text>
             </svg>
           </div>
-        </div>
 
         <div style={{
           padding: '10px 16px',
@@ -274,7 +245,6 @@ export const BufferingCompareModal: React.FC<BufferingCompareModalProps> = ({ in
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };

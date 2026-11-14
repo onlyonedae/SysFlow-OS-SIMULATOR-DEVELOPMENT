@@ -5,6 +5,7 @@ import type {
   DiskSimulationResult
 } from '../../core/disk';
 import { downloadCsv } from '../../utils/exportCsv';
+import { Modal } from '../../shared/Modal';
 
 export interface DiskCompareModalProps {
   input: DiskSimulationInput;
@@ -59,47 +60,10 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
   const barWidth = Math.floor(innerW / results.length) - 14;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-        width: '100%',
-        maxWidth: '820px',
-        maxHeight: '90vh',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 25px 50px rgba(0,0,0,0.6)'
-      }}>
-        {/* Header Modal */}
-        <div className="panel-header" style={{ padding: '10px 16px' }}>
-          <span>Perbandingan Kinerja Penjadwalan Disk</span>
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={onClose}
-            aria-label="Tutup jendela perbandingan"
-          >
-            Tutup [Esc]
-          </button>
-        </div>
-
-        {/* Isi Modal */}
-        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-            Input antrean: <span className="mono" style={{ color: 'var(--color-text)' }}>{input.requests.join(', ')}</span> | Head awal: <span className="mono">{input.initialHead}</span> | Arah: <span className="mono">{input.direction === 'left' ? 'menuju 0' : 'menuju akhir'}</span>
-          </div>
+    <Modal title="Perbandingan Kinerja Penjadwalan Disk" onClose={onClose}>
+      <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+        Input antrean: <span className="mono" style={{ color: 'var(--color-text)' }}>{input.requests.join(', ')}</span> | Head awal: <span className="mono">{input.initialHead}</span> | Arah: <span className="mono">{input.direction === 'left' ? 'menuju 0' : 'menuju akhir'}</span>
+      </div>
 
           {/* Tabel Perbandingan Berdampingan */}
           <div style={{ overflowX: 'auto' }}>
@@ -297,7 +261,6 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
               </text>
             </svg>
           </div>
-        </div>
 
         {/* Footer Modal */}
         <div style={{
@@ -320,7 +283,6 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };

@@ -5,6 +5,7 @@ import type {
   TransferSimulationResult
 } from '../../core/transfer';
 import { downloadCsv } from '../../utils/exportCsv';
+import { Modal } from '../../shared/Modal';
 
 export interface TransferCompareModalProps {
   input: TransferSimulationInput;
@@ -60,39 +61,10 @@ export const TransferCompareModal: React.FC<TransferCompareModalProps> = ({ inpu
   const barWidth = Math.floor(innerW / results.length) - 24;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-        width: '100%',
-        maxWidth: '820px',
-        maxHeight: '90vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        <div className="panel-header" style={{ padding: '10px 16px' }}>
-          <span>Perbandingan Pemakaian CPU & Efisiensi Metode Transfer Data</span>
-          <button type="button" className="btn btn-sm" onClick={onClose} aria-label="Tutup modal">
-            Tutup [Esc]
-          </button>
-        </div>
-
-        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-            Ukuran Data: <span className="mono">{input.dataSizeKb} KB</span> | Ukuran Blok: <span className="mono">{input.blockSizeKb} KB</span> | Waktu I/O: <span className="mono">{input.deviceSpeedMsPerBlock} ms/blok</span>
-          </div>
+    <Modal title="Perbandingan Pemakaian CPU & Efisiensi Metode Transfer Data" onClose={onClose}>
+      <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+        Ukuran Data: <span className="mono">{input.dataSizeKb} KB</span> | Ukuran Blok: <span className="mono">{input.blockSizeKb} KB</span> | Waktu I/O: <span className="mono">{input.deviceSpeedMsPerBlock} ms/blok</span>
+      </div>
 
           {/* Tabel Perbandingan */}
           <div style={{ overflowX: 'auto' }}>
@@ -258,7 +230,6 @@ export const TransferCompareModal: React.FC<TransferCompareModalProps> = ({ inpu
               </text>
             </svg>
           </div>
-        </div>
 
         <div style={{
           padding: '10px 16px',
@@ -280,7 +251,6 @@ export const TransferCompareModal: React.FC<TransferCompareModalProps> = ({ inpu
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
