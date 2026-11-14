@@ -38,9 +38,29 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
   * `Panah Kiri`: Step Mundur
   * `R` / `r`: Reset Simulasi
 * **Panel Narasi Langkah**: Satu kalimat teknis per langkah yang menjelaskan keputusan algoritma secara deterministik.
-* **Mode Bandingkan**: Tabel komparasi metrik berdampingan dengan nilai terbaik bertanda `✓`, dilengkapi grafik batang berlabel sumbu dan satuan resmi.
-* **Ekspor CSV**: Mengunduh seluruh hasil perbandingan untuk lampiran laporan resmi UAS.
+* **Mode Bandingkan**: Modal komparasi metrik berdampingan dengan nilai terbaik bertanda `✓`, dilengkapi grafik batang berlabel sumbu dan satuan resmi untuk seluruh modul (Disk, Buffering, dan Transfer).
+* **Ekspor CSV**: Mengunduh seluruh hasil perbandingan dengan standar UTF-8 BOM dan proteksi spreadsheet.
 * **Halaman Rumus & Asumsi**: Dokumentasi model matematika lengkap per modul untuk pertanggungjawaban akademis saat presentasi.
+* **Aksesibilitas Penuh**: Memenuhi rasio kontras minimum WCAG AA (≥ 4.5:1), navigasi keyboard penuh, modal dialog dengan focus trap, dan dukungan `prefers-reduced-motion`.
+
+---
+
+## Batasan & Asumsi Model Simulasi
+
+1. **Penjadwalan Disk**:
+   - Default estimasi seek time: `0.5 ms/silinder` (dapat dikonfigurasi).
+   - Seluruh request diasumsikan telah tiba di antrean pada $t = 0$.
+   - Algoritma SCAN selalu menyapu hingga silinder batas fisik (`0` atau `maxTrack`) sebelum membalik arah gerak lengan aktuator.
+   - Waktu tunggu rata-rata dan maksimum dikonversikan secara presisi dalam satuan milidetik (`ms`).
+
+2. **Strategi Buffering**:
+   - Model Single Buffer mempertahankan kepemilikan slot buffer sistem hingga komputasi konsumen selesai memproses data.
+   - Model Double Buffer dan Circular Buffer memanfaatkan pergantian slot aktif untuk mencapai konkurensi transfer I/O dan komputasi CPU.
+
+3. **Metode Transfer Data**:
+   - Programmed I/O menyibukkan 100% CPU selama seluruh proses transfer blok data (polling terus-menerus).
+   - Interrupt-Driven I/O membebaskan siklus CPU di sela-sela transfer perangkat keras dan hanya membebankan penanganan ISR per blok.
+   - DMA (Direct Memory Access) membebaskan CPU hampir secara keseluruhan kecuali saat persiapan awal dan sinyal interupsi penyelesaian seluruh transfer data.
 
 ---
 
