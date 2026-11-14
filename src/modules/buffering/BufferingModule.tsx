@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  simulateBuffering
-} from '../../core/buffering';
-import type {
-  BufferingSimulationInput
-} from '../../core/buffering';
+import { simulateBuffering } from '../../core/buffering';
+import type { BufferingSimulationInput } from '../../core/buffering';
 import { BufferingParamsForm } from './BufferingParamsForm';
 import { BufferSlotsView } from './BufferSlotsView';
 import { BufferTimeline } from './BufferTimeline';
 import { BufferingMetricsView } from './BufferingMetricsView';
-import { PlaybackControls } from '../../shared/PlaybackControls';
-import { StepExplanation } from '../../shared/StepExplanation';
-import { BufferingCompareModal } from './BufferingCompareModal';
+import { BufferingComparePanel } from './BufferingComparePanel';
 import { downloadCsv } from '../../utils/exportCsv';
 
 export const BufferingModule: React.FC = () => {
@@ -23,24 +17,25 @@ export const BufferingModule: React.FC = () => {
     bufferCapacity: 4
   });
 
-  const [isCompareOpen, setIsCompareOpen] = useState(false);
-
-  // Jalankan simulasi murni
   const simulationResult = useMemo(() => {
     return simulateBuffering(input);
   }, [input]);
 
   const totalSteps = simulationResult.traces.length - 1;
 
-  // State Pemutaran
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speed, setSpeed] = useState<number>(1);
   const playTimerRef = useRef<number | null>(null);
 
+  // Reset step ketika input berubah
+  const prevInputRef = useRef(input);
   useEffect(() => {
-    setCurrentStep(0);
-    setIsPlaying(false);
+    if (prevInputRef.current !== input) {
+      prevInputRef.current = input;
+      setCurrentStep(0);
+      setIsPlaying(false);
+    }
   }, [input]);
 
   useEffect(() => {
@@ -125,82 +120,170 @@ export const BufferingModule: React.FC = () => {
   };
 
   return (
-    <div className="workspace-grid">
-      {/* Kolom 1: Parameter */}
-      <section className="panel" aria-label="Parameter Buffering">
-        <div className="panel-header">
-          <span>Parameter Strategi Buffering</span>
+    <div className="instrument-shell">
+      {/* ─── Header Halaman Sesuai Figma ─── */}
+      <header className="instrument-page-header">
+        <div>
+          <h1 className="instrument-page-title">Buffering</h1>
+          <div className="instrument-page-subtitle">
+            Bandingkan empat strategi buffer pada pola producer–consumer yang sama.
+          </div>
         </div>
-        <BufferingParamsForm input={input} onInputChange={setInput} />
-      </section>
-
-      {/* Kolom 2: Visualisasi Dominan & Timeline */}
-      <section className="panel" aria-label="Visualisasi Buffering" style={{ overflowY: 'auto' }}>
-        <div className="panel-header">
-          <span>Visualisasi Slot Buffer & Timeline</span>
-          <span className="mono" style={{ fontSize: '11px', color: 'var(--color-active)' }}>
-            Metode: {simulationResult.methodName}
-          </span>
+        <div className="instrument-header-meta">
+          <div>{input.itemCount} item · T={input.produceTime} ms · C={input.consumeTime} ms</div>
+          <div>{simulationResult.methodName} · {input.method === 'circular' ? `${input.bufferCapacity ?? 4} slot` : (input.method === 'double' ? '2 slot' : (input.method === 'single' ? '1 slot' : '0 slot'))}</div>
         </div>
+      </header>
 
-        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Tampilan Status Slot Buffer */}
+      {/* ─── Baris Utama: Tahap 1 (Rel Kiri) & Tahap 2 (Panel Kanan) ─── */}
+      <div className="instrument-main-row">
+        {/* Tahap 1: Rel Kiri (~360px) */}
+        <section className="instrument-card stage-rail" aria-label="1. Pola & parameter">
+          <div className="instrument-stage-header">
+            <span>1. Pola & parameter</span>
+          </div>
+          <BufferingParamsForm
+            input={input}
+            onInputChange={setInput}
+          />
+        </section>
+
+        {/* Tahap 2: Visualisasi Simultan & Timeline */}
+        <section className="instrument-card stage-main" aria-label="2. Slot & timeline">
+          <div className="instrument-stage-header">
+            <span>2. Slot & timeline</span>
+            <span className="stage-header-meta mono">
+              {simulationResult.methodName.toLowerCase()} · langkah {currentStep} / {totalSteps}
+            </span>
+          </div>
+
+          {/* Slot Cards & Telemetri Aktor */}
           <BufferSlotsView
             slots={currentTrace?.slots || []}
             currentTrace={currentTrace}
             method={input.method}
           />
 
-          {/* Timeline Aktivitas Producer dan Consumer */}
+          {/* Timeline Diagram */}
           <BufferTimeline
             timeline={simulationResult.timeline}
             currentTime={currentTrace?.currentTime ?? 0}
             totalTime={simulationResult.metrics.totalCompletionTime}
           />
+
+          {/* Bar Kontrol Playback */}
+          <div className="instrument-playback-bar">
+            <div className="playback-btns">
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleStepBackward}
+                disabled={currentStep <= 0}
+                title="Langkah sebelumnya"
+              >
+                ◀
+              </button>
+              <button
+                type="button"
+                className="btn-playback primary"
+                onClick={isPlaying ? handlePause : handlePlay}
+                title={isPlaying ? 'Jeda simulasi' : 'Jalankan simulasi'}
+              >
+                {isPlaying ? '⏸' : '▶'}
+              </button>
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleStepForward}
+                disabled={currentStep >= totalSteps}
+                title="Langkah berikutnya"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleReset}
+                title="Reset simulasi ke awal"
+              >
+                ↺
+              </button>
+            </div>
+
+            <div className="playback-status mono">
+              <span>LANGKAH {currentStep} / {totalSteps}</span>
+              <span className="playback-sub">· t = {currentTrace?.currentTime ?? 0} ms</span>
+            </div>
+
+            <div className="playback-speed">
+              <span className="speed-label">Kecepatan:</span>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.5"
+                value={speed}
+                onChange={(e) => setSpeed(parseFloat(e.target.value))}
+                className="speed-slider"
+              />
+              <span className="speed-value mono">{speed.toFixed(1)}×</span>
+            </div>
+          </div>
+
+          {/* Kotak Narasi Penjelasan Langkah */}
+          <div className="instrument-narration-box">
+            <div className="narration-accent-line" />
+            <div className="narration-content">
+              <div className="narration-step-tag">LANGKAH {currentStep}</div>
+              <div className="narration-text">
+                {currentTrace?.explanation || 'Simulasi dimulai pada t=0.'}
+              </div>
+            </div>
+            <div className="narration-meta mono">
+              <div>selesai {currentTrace?.completedItemsCount ?? 0} / {input.itemCount}</div>
+              <div>t = {currentTrace?.currentTime ?? 0} ms</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ─── Baris Bawah: Tahap 3 (Evaluasi Lebar Penuh) ─── */}
+      <section className="instrument-card stage-evaluation" aria-label="3. Evaluasi">
+        <div className="instrument-stage-header">
+          <span>3. Evaluasi</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span className="stage-header-meta mono">proyeksi seluruh {input.itemCount} item</span>
+            <button
+              type="button"
+              className="action-btn"
+              onClick={handleExportCsv}
+              title="Unduh seluruh metrik perbandingan buffering dalam format CSV"
+            >
+              Ekspor CSV
+            </button>
+          </div>
         </div>
 
-        {/* Kontrol Putar */}
-        <PlaybackControls
-          isPlaying={isPlaying}
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          speed={speed}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onReset={handleReset}
-          onSpeedChange={setSpeed}
-        />
-
-        {/* Panel Penjelasan Langkah */}
-        <StepExplanation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          explanation={currentTrace?.explanation || ''}
-        />
-      </section>
-
-      {/* Kolom 3: Metrik */}
-      <section className="panel" aria-label="Metrik Buffering">
-        <div className="panel-header">
-          <span>Metrik Kinerja Buffering</span>
-        </div>
+        {/* 4 Metrik Raksasa Bersekat Garis */}
         <BufferingMetricsView
           metrics={simulationResult.metrics}
-          methodName={simulationResult.methodName}
-          onCompareClick={() => setIsCompareOpen(true)}
-          onExportCsvClick={handleExportCsv}
         />
+
+        {/* Tabel Komparasi 4 Strategi Lebar Penuh dengan Batang Relatif */}
+        <div style={{ padding: '0 24px 20px' }}>
+          <BufferingComparePanel
+            input={input}
+            activeMethod={input.method}
+            onSelectMethod={(m) => setInput({ ...input, method: m })}
+          />
+        </div>
       </section>
 
-      {/* Modal Bandingkan */}
-      {isCompareOpen && (
-        <BufferingCompareModal
-          input={input}
-          onClose={() => setIsCompareOpen(false)}
-        />
-      )}
+      {/* ─── Footer Halaman Sesuai Figma ─── */}
+      <footer className="instrument-footer">
+        <span>Model deterministik: producer dan consumer berjalan pada waktu diskret; tidak ada waktu setup.</span>
+        <span className="mono">SYSFLOW 1.9</span>
+      </footer>
     </div>
   );
 };

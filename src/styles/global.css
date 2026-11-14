@@ -1620,3 +1620,585 @@ body {
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-bright); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   FIGMA EXTENSIONS: BUFFERING, TRANSFER, & FORMULAS INSTRUMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Radio Card List (Stage 1 Strategy / Method Selector) */
+.radio-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-field);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.radio-card-item:hover {
+  border-color: var(--color-rule-strong);
+}
+
+.radio-card-item.selected {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.radio-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.radio-card-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-field);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+}
+
+.radio-card-item.selected .radio-card-dot {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+}
+
+.radio-card-dot-inner {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+.radio-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink2);
+}
+
+.radio-card-item.selected .radio-card-name {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.radio-card-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-ink3);
+}
+
+.radio-card-item.selected .radio-card-badge {
+  color: var(--color-accent);
+}
+
+/* 2x2 Field Grid */
+.field-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-box-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-box-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-ink3);
+}
+
+.field-box-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-field);
+  border-radius: 2px;
+  padding: 0 10px;
+  height: 34px;
+}
+
+.field-box-input-wrapper:focus-within {
+  border-color: var(--color-accent);
+}
+
+.field-box-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-ink);
+  outline: none;
+  width: 100%;
+}
+
+.field-box-suffix {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink3);
+  margin-left: 6px;
+}
+
+/* ─── Buffering Stage 2: Slot Cards & Telemetry ─── */
+.buffering-stage2-top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.slot-cards-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.slot-card-item {
+  flex: 1;
+  min-width: 160px;
+  max-width: 200px;
+  height: 104px;
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  background-color: var(--color-sunk);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.slot-card-item.full {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.slot-card-item.emptying {
+  background-color: var(--color-surface);
+  border-color: var(--color-accent);
+}
+
+.slot-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slot-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink2);
+}
+
+.slot-card-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-ink3);
+}
+
+.slot-card-item.full .slot-card-badge,
+.slot-card-item.emptying .slot-card-badge {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.slot-card-body {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.slot-card-sub {
+  font-size: 11px;
+  color: var(--color-ink3);
+}
+
+/* Actor State Readout */
+.actor-readout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  padding: 12px 16px;
+}
+
+.actor-readout-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.actor-readout-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actor-readout-sub {
+  font-size: 11.5px;
+  color: var(--color-ink3);
+}
+
+/* ─── Actor Timeline (Buffering & Transfer) ─── */
+.timeline-module-block {
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeline-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-module-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink3);
+}
+
+.timeline-tracks-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeline-track-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-track-name {
+  font-size: 12px;
+  color: var(--color-ink2);
+  text-align: right;
+}
+
+.timeline-track-bar-canvas {
+  height: 32px;
+  background-color: var(--color-sunk);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-segment-working {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
+  box-sizing: border-box;
+}
+
+.timeline-segment-working::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-accent);
+}
+
+.timeline-segment-danger {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  box-sizing: border-box;
+}
+
+.timeline-segment-danger::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-danger);
+}
+
+.timeline-axis-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 92px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-ink3);
+  padding-top: 4px;
+}
+
+.timeline-legend-row {
+  display: flex;
+  gap: 16px;
+  margin-left: 92px;
+  font-size: 11.5px;
+  color: var(--color-ink3);
+  align-items: center;
+  padding-top: 4px;
+}
+
+.timeline-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+/* ─── Transfer Stage 2: Bus Architecture ─── */
+.bus-topology-section {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bus-topology-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bus-topology-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink3);
+}
+
+.bus-diagram-wrapper {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  padding: 20px 24px 34px;
+}
+
+.bus-nodes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.bus-node-box {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-field);
+  border-radius: 2px;
+  padding: 12px 14px;
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.bus-node-box.active {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.bus-node-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.bus-node-task {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink3);
+}
+
+.bus-node-box.active .bus-node-task {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.bus-line-horizontal {
+  position: absolute;
+  bottom: 18px;
+  left: 36px;
+  right: 36px;
+  height: 2px;
+  background-color: var(--color-rule-strong);
+  z-index: 1;
+}
+
+.bus-line-label {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-ink3);
+}
+
+/* ─── Formulas & Assumptions Reading View ─── */
+.formulas-reading-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 32px;
+  align-items: start;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .formulas-reading-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formulas-nav-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 80px;
+}
+
+.formulas-nav-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-ink3);
+  letter-spacing: 0.07em;
+}
+
+.formulas-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formulas-nav-item {
+  padding: 8px 12px;
+  font-size: 13.5px;
+  color: var(--color-ink3);
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.formulas-nav-item:hover {
+  color: var(--color-ink);
+}
+
+.formulas-nav-item.active {
+  color: var(--color-ink);
+  font-weight: 600;
+  border-left-color: var(--color-accent);
+  background-color: var(--color-sunk);
+}
+
+.formulas-nav-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-ink3);
+  padding: 12px 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.formulas-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 760px;
+}
+
+.formula-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formula-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-rule);
+  margin: 0;
+}
+
+.formula-section-p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-ink2);
+  margin: 0;
+}
+
+.formula-callout-box {
+  background-color: var(--color-sunk);
+  border: 1px solid var(--color-rule);
+  border-left: 2.5px solid var(--color-accent);
+  border-radius: 2px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+
+.assumption-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assumption-row {
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.assumption-cell-name {
+  padding: 10px 12px 10px 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink2);
+  vertical-align: top;
+  width: 110px;
+}
+
+.assumption-cell-desc {
+  padding: 10px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-ink3);
+  vertical-align: top;
+}

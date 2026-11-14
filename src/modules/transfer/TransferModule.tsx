@@ -1,18 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  simulateTransfer
-} from '../../core/transfer';
-import type {
-  TransferSimulationInput,
-  TransferMethod
-} from '../../core/transfer';
+import { simulateTransfer } from '../../core/transfer';
+import type { TransferSimulationInput, TransferMethod } from '../../core/transfer';
 import { TransferParamsForm } from './TransferParamsForm';
 import { TransferHardwareView } from './TransferHardwareView';
 import { TimingDiagram } from './TimingDiagram';
 import { TransferMetricsView } from './TransferMetricsView';
-import { PlaybackControls } from '../../shared/PlaybackControls';
-import { StepExplanation } from '../../shared/StepExplanation';
-import { TransferCompareModal } from './TransferCompareModal';
+import { TransferComparePanel } from './TransferComparePanel';
 import { downloadCsv } from '../../utils/exportCsv';
 
 export const TransferModule: React.FC = () => {
@@ -26,24 +19,25 @@ export const TransferModule: React.FC = () => {
     cpuCopyTimePerBlockMs: 1
   });
 
-  const [isCompareOpen, setIsCompareOpen] = useState(false);
-
-  // Jalankan simulasi murni
   const simulationResult = useMemo(() => {
     return simulateTransfer(input);
   }, [input]);
 
   const totalSteps = simulationResult.traces.length - 1;
 
-  // State Pemutaran
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speed, setSpeed] = useState<number>(1);
   const playTimerRef = useRef<number | null>(null);
 
+  // Reset step ketika input berubah
+  const prevInputRef = useRef(input);
   useEffect(() => {
-    setCurrentStep(0);
-    setIsPlaying(false);
+    if (prevInputRef.current !== input) {
+      prevInputRef.current = input;
+      setCurrentStep(0);
+      setIsPlaying(false);
+    }
   }, [input]);
 
   useEffect(() => {
@@ -127,83 +121,173 @@ export const TransferModule: React.FC = () => {
     downloadCsv(`sysflow-transfer-${Date.now()}.csv`, headers, rows);
   };
 
+  const totalBlocks = Math.max(1, Math.ceil(input.dataSizeKb / Math.max(1, input.blockSizeKb)));
+
   return (
-    <div className="workspace-grid">
-      {/* Kolom 1: Parameter */}
-      <section className="panel" aria-label="Parameter Transfer Data">
-        <div className="panel-header">
-          <span>Parameter Transfer Data</span>
+    <div className="instrument-shell">
+      {/* ─── Header Halaman Sesuai Figma ─── */}
+      <header className="instrument-page-header">
+        <div>
+          <h1 className="instrument-page-title">Transfer Data</h1>
+          <div className="instrument-page-subtitle">
+            Bandingkan tiga metode transfer pada ukuran data dan perangkat yang sama.
+          </div>
         </div>
-        <TransferParamsForm input={input} onInputChange={setInput} />
-      </section>
-
-      {/* Kolom 2: Visualisasi Dominan & Diagram Timing 3 Jalur */}
-      <section className="panel" aria-label="Visualisasi Transfer Data" style={{ overflowY: 'auto' }}>
-        <div className="panel-header">
-          <span>Timing Diagram & Arsitektur Bus</span>
-          <span className="mono" style={{ fontSize: '11px', color: 'var(--color-active)' }}>
-            Metode: {simulationResult.methodName}
-          </span>
+        <div className="instrument-header-meta">
+          <div>{input.dataSizeKb} KB · {totalBlocks} blok · {input.blockSizeKb} KB/blok</div>
+          <div>{input.deviceSpeedMsPerBlock} ms/blok · interrupt {input.interruptCostMs} ms</div>
         </div>
+      </header>
 
-        <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Topologi Arsitektur Hardware Bus */}
+      {/* ─── Baris Utama: Tahap 1 (Rel Kiri) & Tahap 2 (Panel Kanan) ─── */}
+      <div className="instrument-main-row">
+        {/* Tahap 1: Rel Kiri (~360px) */}
+        <section className="instrument-card stage-rail" aria-label="1. Metode & perangkat">
+          <div className="instrument-stage-header">
+            <span>1. Metode &amp; perangkat</span>
+          </div>
+          <TransferParamsForm
+            input={input}
+            onInputChange={setInput}
+          />
+        </section>
+
+        {/* Tahap 2: Bus & Timing Simultan */}
+        <section className="instrument-card stage-main" aria-label="2. Bus & timing">
+          <div className="instrument-stage-header">
+            <span>2. Bus &amp; timing</span>
+            <span className="stage-header-meta mono">
+              {simulationResult.methodName.toLowerCase()} · langkah {currentStep} / {totalSteps}
+            </span>
+          </div>
+
+          {/* Arsitektur Bus & Node Hardware */}
           <TransferHardwareView
             currentTrace={currentTrace}
             method={input.method}
             dataSizeKb={input.dataSizeKb}
           />
 
-          {/* Timing Diagram 3 Jalur (CPU, Device, Memori) */}
+          {/* Timing Diagram 3 Jalur */}
           <TimingDiagram
             timeline={simulationResult.timeline}
             currentTime={currentTrace?.currentTime ?? 0}
             totalTime={simulationResult.metrics.totalTransferTime}
           />
+
+          {/* Bar Kontrol Playback */}
+          <div className="instrument-playback-bar">
+            <div className="playback-btns">
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleStepBackward}
+                disabled={currentStep <= 0}
+                title="Langkah sebelumnya"
+              >
+                ◀
+              </button>
+              <button
+                type="button"
+                className="btn-playback primary"
+                onClick={isPlaying ? handlePause : handlePlay}
+                title={isPlaying ? 'Jeda simulasi' : 'Jalankan simulasi'}
+              >
+                {isPlaying ? '⏸' : '▶'}
+              </button>
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleStepForward}
+                disabled={currentStep >= totalSteps}
+                title="Langkah berikutnya"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                className="btn-playback"
+                onClick={handleReset}
+                title="Reset simulasi ke awal"
+              >
+                ↺
+              </button>
+            </div>
+
+            <div className="playback-status mono">
+              <span>LANGKAH {currentStep} / {totalSteps}</span>
+              <span className="playback-sub">· t = {currentTrace?.currentTime ?? 0} ms</span>
+            </div>
+
+            <div className="playback-speed">
+              <span className="speed-label">Kecepatan:</span>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.5"
+                value={speed}
+                onChange={(e) => setSpeed(parseFloat(e.target.value))}
+                className="speed-slider"
+              />
+              <span className="speed-value mono">{speed.toFixed(1)}×</span>
+            </div>
+          </div>
+
+          {/* Kotak Narasi Penjelasan Langkah */}
+          <div className="instrument-narration-box">
+            <div className="narration-accent-line" />
+            <div className="narration-content">
+              <div className="narration-step-tag">LANGKAH {currentStep}</div>
+              <div className="narration-text">
+                {currentTrace?.explanation || 'Proses inisialisasi transfer data dimulai.'}
+              </div>
+            </div>
+            <div className="narration-meta mono">
+              <div>blok {currentTrace?.transferredBlocks ?? 0} / {totalBlocks}</div>
+              <div>t = {currentTrace?.currentTime ?? 0} ms</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ─── Baris Bawah: Tahap 3 (Evaluasi Lebar Penuh) ─── */}
+      <section className="instrument-card stage-evaluation" aria-label="3. Evaluasi">
+        <div className="instrument-stage-header">
+          <span>3. Evaluasi</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span className="stage-header-meta mono">proyeksi seluruh {totalBlocks} blok</span>
+            <button
+              type="button"
+              className="action-btn"
+              onClick={handleExportCsv}
+              title="Unduh seluruh metrik perbandingan transfer data dalam format CSV"
+            >
+              Ekspor CSV
+            </button>
+          </div>
         </div>
 
-        {/* Kontrol Putar */}
-        <PlaybackControls
-          isPlaying={isPlaying}
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          speed={speed}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onReset={handleReset}
-          onSpeedChange={setSpeed}
-        />
-
-        {/* Panel Penjelasan Langkah */}
-        <StepExplanation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          explanation={currentTrace?.explanation || ''}
-        />
-      </section>
-
-      {/* Kolom 3: Metrik */}
-      <section className="panel" aria-label="Metrik Transfer Data">
-        <div className="panel-header">
-          <span>Metrik Utilisasi CPU & Waktu</span>
-        </div>
+        {/* 4 Metrik Raksasa Bersekat Garis */}
         <TransferMetricsView
           metrics={simulationResult.metrics}
-          methodName={simulationResult.methodName}
-          onCompareClick={() => setIsCompareOpen(true)}
-          onExportCsvClick={handleExportCsv}
         />
+
+        {/* Tabel Komparasi 3 Metode Lebar Penuh dengan Batang Relatif */}
+        <div style={{ padding: '0 24px 20px' }}>
+          <TransferComparePanel
+            input={input}
+            activeMethod={input.method}
+            onSelectMethod={(m) => setInput({ ...input, method: m })}
+          />
+        </div>
       </section>
 
-      {/* Modal Bandingkan */}
-      {isCompareOpen && (
-        <TransferCompareModal
-          input={input}
-          onClose={() => setIsCompareOpen(false)}
-        />
-      )}
+      {/* ─── Footer Halaman Sesuai Figma ─── */}
+      <footer className="instrument-footer">
+        <span>Model: waktu perangkat konstan per blok; CPU tidak menjalankan proses lain selama menunggu.</span>
+        <span className="mono">SYSFLOW 1.9</span>
+      </footer>
     </div>
   );
 };

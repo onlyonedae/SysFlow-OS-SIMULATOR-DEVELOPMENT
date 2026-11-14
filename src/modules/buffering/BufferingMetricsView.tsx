@@ -1,96 +1,69 @@
 import React from 'react';
 import type { BufferingMetrics } from '../../core/buffering';
+import { MetricTooltip } from '../../shared/MetricTooltip';
 
 export interface BufferingMetricsViewProps {
   metrics: BufferingMetrics;
-  methodName: string;
-  onCompareClick: () => void;
-  onExportCsvClick: () => void;
+  methodName?: string;
+  onCompareClick?: () => void;
+  onExportCsvClick?: () => void;
 }
 
 export const BufferingMetricsView: React.FC<BufferingMetricsViewProps> = ({
-  metrics,
-  methodName,
-  onCompareClick,
-  onExportCsvClick
+  metrics
 }) => {
   return (
-    <div className="panel-body">
-      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text)' }}>
-        Hasil Metrik: {methodName}
+    <div className="evaluation-strip-body">
+      {/* ─── Strip 4 Metrik Horizontal Bersekat Garis Sesuai Figma ─── */}
+      <div className="metrics-strip">
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">TOTAL WAKTU SELESAI</span>
+            <MetricTooltip text="Total durasi siklus diskret yang dibutuhkan hingga seluruh item selesai diproduksi dan dikonsumsi." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.totalCompletionTime.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">ms</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">THROUGHPUT</span>
+            <MetricTooltip text="Jumlah item data yang selesai diproses per milidetik (Item Selesai ÷ Total Waktu)." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.throughput.toFixed(4).replace('.', ',')}</span>
+            <span className="metric-unit">item/ms</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">SPEEDUP VS TANPA BUFFER</span>
+            <MetricTooltip text="Faktor percepatan rasio total waktu strategi ini dibandingkan konfigurasi unbuffered (tanpa buffer)." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.speedupFactor.toFixed(2).replace('.', ',')}</span>
+            <span className="metric-unit">×</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">KETERISIAN RATA-RATA</span>
+            <MetricTooltip text="Persentase rata-rata slot buffer yang terisi data sepanjang seluruh siklus eksekusi." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.avgBufferOccupancy.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">%</span>
+          </div>
+        </div>
       </div>
 
-      <table className="table-compact">
-        <tbody>
-          <tr>
-            <th>Total Waktu Selesai</th>
-            <td className="metric-value">
-              <strong style={{ color: 'var(--color-active)', fontSize: '14px' }}>
-                {metrics.totalCompletionTime}
-              </strong>{' '}
-              ms
-            </td>
-          </tr>
-          <tr>
-            <th>Throughput Sistem</th>
-            <td className="metric-value">
-              {metrics.throughput.toFixed(4)} item/ms
-            </td>
-          </tr>
-          <tr>
-            <th>Speedup Relatif</th>
-            <td className="metric-value">
-              <strong style={{ color: metrics.speedupFactor > 1 ? 'var(--color-served)' : 'inherit' }}>
-                {metrics.speedupFactor.toFixed(2)}x
-              </strong>{' '}
-              vs Unbuffered
-            </td>
-          </tr>
-          <tr>
-            <th>Idle Time Producer (I/O)</th>
-            <td className="metric-value">
-              <span style={{ color: metrics.producerIdleTime > 0 ? 'var(--color-idle)' : 'inherit' }}>
-                {metrics.producerIdleTime} ms
-              </span>{' '}
-              ({metrics.producerUtilization}% aktif)
-            </td>
-          </tr>
-          <tr>
-            <th>Idle Time Consumer (CPU)</th>
-            <td className="metric-value">
-              <span style={{ color: metrics.consumerIdleTime > 0 ? 'var(--color-idle)' : 'inherit' }}>
-                {metrics.consumerIdleTime} ms
-              </span>{' '}
-              ({metrics.consumerUtilization}% aktif)
-            </td>
-          </tr>
-          <tr>
-            <th>Rata-rata Keterisian Buffer</th>
-            <td className="metric-value">
-              {metrics.avgBufferOccupancy}%
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* Tombol Aksi */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={onCompareClick}
-          title="Bandingkan performa keempat strategi buffering"
-        >
-          Bandingkan Semua Strategi
-        </button>
-        <button
-          type="button"
-          className="btn"
-          onClick={onExportCsvClick}
-          title="Unduh metrik perbandingan buffering dalam CSV"
-        >
-          Ekspor Hasil ke CSV
-        </button>
+      <div className="metric-footer-strip">
+        <span>Double dan Circular seri pada total waktu; Circular menghapus idle producer saat pola burst.</span>
+        <span className="mono">semua durasi 1 desimal</span>
       </div>
     </div>
   );

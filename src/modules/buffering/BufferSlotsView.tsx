@@ -16,195 +16,85 @@ export const BufferSlotsView: React.FC<BufferSlotsViewProps> = ({
   const cState = currentTrace?.consumerState || 'idle';
   const pItem = currentTrace?.producerCurrentItem;
   const cItem = currentTrace?.consumerCurrentItem;
-
-  const producerBorder = pState === 'working'
-    ? 'var(--color-waiting-bright)'
-    : pState === 'idle'
-    ? 'var(--color-idle-bright)'
-    : 'var(--color-chassis-border)';
-
-  const consumerBorder = cState === 'working'
-    ? 'var(--color-active-bright)'
-    : cState === 'idle'
-    ? 'var(--color-idle-bright)'
-    : 'var(--color-chassis-border)';
+  const pIdle = currentTrace?.producerIdleTotal ?? 0;
+  const cIdle = currentTrace?.consumerIdleTotal ?? 0;
 
   return (
-    <div className="hardware-chassis">
-      {/* Header Panel */}
-      <div className="hardware-chassis-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="status-dot active"></span>
-          <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px' }}>
-            STATUS BUFFER &amp; WORKER PIPELINE
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '16px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
-          <span style={{ color: 'var(--color-chassis-muted)' }}>
-            WAKTU: <strong style={{ color: 'var(--color-active-bright)' }}>{currentTrace?.currentTime ?? 0} ms</strong>
-          </span>
-          <span style={{ color: 'var(--color-chassis-muted)' }}>
-            SELESAI: <strong style={{ color: 'var(--color-served-bright)' }}>{currentTrace?.completedItemsCount ?? 0} item</strong>
-          </span>
-        </div>
+    <div className="buffering-stage2-top">
+      {/* ─── Header Slot Buffer ─── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-ink3)' }}>Slot buffer</span>
+        <span className="mono" style={{ fontSize: '12px', color: 'var(--color-ink3)' }}>
+          t = {currentTrace?.currentTime ?? 0} ms
+        </span>
       </div>
 
-      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'var(--color-chassis-inner)' }}>
-        {/* Diagram Producer → Buffer → Consumer */}
-        <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr 130px', gap: '14px', alignItems: 'center' }}>
+      {/* ─── Kartu Slot Buffer Sesuai Figma ─── */}
+      {method === 'unbuffered' ? (
+        <div style={{
+          backgroundColor: 'var(--color-sunk)',
+          border: '1px solid var(--color-rule)',
+          borderRadius: '2px',
+          padding: '16px',
+          color: 'var(--color-ink3)',
+          fontSize: '13px',
+          textAlign: 'center'
+        }}>
+          0 slot (Tanpa buffer) · Aliran data langsung antara I/O producer dan CPU consumer.
+        </div>
+      ) : (
+        <div className="slot-cards-container">
+          {slots.map((s, i) => {
+            const isFull = s.status === 'full';
+            const isEmptying = s.status === 'emptying';
+            const statusClass = isFull ? 'full' : isEmptying ? 'emptying' : 'empty';
+            const badgeLabel = isFull ? 'PENUH' : isEmptying ? 'DIAMBIL' : 'KOSONG';
 
-          {/* Box PRODUCER */}
-          <div style={{
-            backgroundColor: 'var(--color-chassis-node)',
-            border: `1.5px solid ${producerBorder}`,
-            borderRadius: 'var(--border-radius)',
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px'
-          }}>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-chassis-muted)' }}>
-              PRODUCER (I/O DEVICE)
-            </div>
-            <div style={{
-              fontSize: '12px',
-              fontFamily: 'var(--font-mono)',
-              fontWeight: 700,
-              color: pState === 'working'
-                ? 'var(--color-waiting-bright)'
-                : pState === 'idle'
-                ? 'var(--color-idle-bright)'
-                : 'var(--color-chassis-muted)'
-            }}>
-              {pState === 'working' ? `PRODUCE #${pItem}` : pState === 'idle' ? 'STALLED (IDLE)' : 'MENUNGGU'}
-            </div>
-            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
-              {pState === 'working' ? 'Mengisi ke buffer' : pState === 'idle' ? '▲ Buffer penuh' : 'Siap'}
-            </div>
-          </div>
-
-          {/* AREA BUFFER SLOTS */}
-          <div style={{
-            backgroundColor: 'var(--color-chassis-surface)',
-            border: '1px solid var(--color-chassis-border)',
-            borderRadius: 'var(--border-radius)',
-            padding: '12px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-chassis-text)' }}>
-                Kapasitas: {method === 'unbuffered' ? '0 (Langsung)' : `${slots.length} Slot`}
-              </span>
-              <span style={{ fontSize: '10px', color: 'var(--color-chassis-muted)', fontFamily: 'var(--font-mono)' }}>
-                {method.toUpperCase()}
-              </span>
-            </div>
-
-            {method === 'unbuffered' ? (
-              <div style={{
-                padding: '14px',
-                textAlign: 'center',
-                border: '1.5px dashed var(--color-chassis-border)',
-                color: 'var(--color-chassis-muted)',
-                fontSize: '11px',
-                borderRadius: 'var(--border-radius)',
-                lineHeight: '1.5'
-              }}>
-                Tidak ada buffer perantara. Producer dan Consumer menunggu satu sama lain secara sekuensial.
+            return (
+              <div key={s.index} className={`slot-card-item ${statusClass}`}>
+                <div className="slot-card-header">
+                  <span className="slot-card-title">Slot {i + 1}</span>
+                  <span className="slot-card-badge">{badgeLabel}</span>
+                </div>
+                <div className="slot-card-body">
+                  {isFull || isEmptying ? `item ${s.itemId ?? (i + 1)}` : '—'}
+                </div>
+                <div className="slot-card-sub">
+                  {isFull
+                    ? 'menunggu consumer'
+                    : isEmptying
+                    ? `item ${s.itemId ?? (i + 1)} · diproses`
+                    : 'menunggu producer'}
+                </div>
               </div>
-            ) : (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${Math.min(slots.length, 6)}, 1fr)`,
-                gap: '8px'
-              }}>
-                {slots.map((slot) => {
-                  let borderColor = 'var(--color-chassis-border)';
-                  let bgColor = 'var(--color-chassis-node)';
-                  let statusText = 'KOSONG';
-                  let statusColor = 'var(--color-chassis-muted)';
+            );
+          })}
+        </div>
+      )}
 
-                  if (slot.status === 'filling') {
-                    borderColor = 'var(--color-waiting-bright)';
-                    bgColor = 'var(--color-waiting-bg)';
-                    statusText = 'SEDANG DIISI';
-                    statusColor = 'var(--color-waiting-bright)';
-                  } else if (slot.status === 'full') {
-                    borderColor = 'var(--color-served-bright)';
-                    bgColor = 'var(--color-served-bg)';
-                    statusText = 'PENUH (READY)';
-                    statusColor = 'var(--color-served-bright)';
-                  } else if (slot.status === 'emptying') {
-                    borderColor = 'var(--color-active-bright)';
-                    bgColor = 'var(--color-active-bg)';
-                    statusText = 'DIPINDAHKAN';
-                    statusColor = 'var(--color-active-bright)';
-                  }
-
-                  return (
-                    <div
-                      key={`slot-${slot.index}`}
-                      style={{
-                        border: `1.5px solid ${borderColor}`,
-                        backgroundColor: bgColor,
-                        borderRadius: 'var(--border-radius)',
-                        padding: '8px 6px',
-                        textAlign: 'center',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '4px',
-                        transition: 'border-color var(--transition-normal), background-color var(--transition-normal)'
-                      }}
-                    >
-                      <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted)', fontFamily: 'var(--font-mono)' }}>
-                        Slot {slot.index + 1}
-                      </div>
-                      <div style={{
-                        fontSize: '13px',
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 700,
-                        color: slot.itemId ? 'var(--color-chassis-text)' : 'var(--color-chassis-border)'
-                      }}>
-                        {slot.itemId ? `#${slot.itemId}` : '—'}
-                      </div>
-                      <div style={{ fontSize: '9px', fontWeight: 600, color: statusColor }}>
-                        {statusText}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+      {/* ─── Telemetri Status Aktor (Producer & Consumer) ─── */}
+      <div className="actor-readout-grid">
+        <div className="actor-readout-col">
+          <div className="actor-readout-title">
+            <span>Producer</span>
+            <span className="mono" style={{ fontSize: '11px', color: pState === 'working' ? 'var(--color-accent)' : 'var(--color-ink3)' }}>
+              {pState.toUpperCase()}
+            </span>
           </div>
+          <div className="actor-readout-sub">
+            {pItem ? `item ${pItem}` : '—'} · menganggur {pIdle.toFixed(1).replace('.', ',')} ms
+          </div>
+        </div>
 
-          {/* Box CONSUMER */}
-          <div style={{
-            backgroundColor: 'var(--color-chassis-node)',
-            border: `1.5px solid ${consumerBorder}`,
-            borderRadius: 'var(--border-radius)',
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px'
-          }}>
-            <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-chassis-muted)' }}>
-              CONSUMER (CPU)
-            </div>
-            <div style={{
-              fontSize: '12px',
-              fontFamily: 'var(--font-mono)',
-              fontWeight: 700,
-              color: cState === 'working'
-                ? 'var(--color-active-bright)'
-                : 'var(--color-idle-bright)'
-            }}>
-              {cState === 'working' ? `PROSES #${cItem}` : 'STARVED (IDLE)'}
-            </div>
-            <div style={{ fontSize: '10px', color: 'var(--color-chassis-muted-2)' }}>
-              {cState === 'working' ? 'Komputasi data' : '▲ Menunggu data'}
-            </div>
+        <div className="actor-readout-col">
+          <div className="actor-readout-title">
+            <span>Consumer</span>
+            <span className="mono" style={{ fontSize: '11px', color: cState === 'working' ? 'var(--color-accent)' : 'var(--color-ink3)' }}>
+              {cState.toUpperCase()}
+            </span>
+          </div>
+          <div className="actor-readout-sub">
+            {cItem ? `item ${cItem}` : '—'} · menganggur {cIdle.toFixed(1).replace('.', ',')} ms
           </div>
         </div>
       </div>

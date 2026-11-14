@@ -1,110 +1,69 @@
 import React from 'react';
 import type { TransferMetrics } from '../../core/transfer';
+import { MetricTooltip } from '../../shared/MetricTooltip';
 
 export interface TransferMetricsViewProps {
   metrics: TransferMetrics;
-  methodName: string;
-  onCompareClick: () => void;
-  onExportCsvClick: () => void;
+  methodName?: string;
+  onCompareClick?: () => void;
+  onExportCsvClick?: () => void;
 }
 
 export const TransferMetricsView: React.FC<TransferMetricsViewProps> = ({
-  metrics,
-  methodName,
-  onCompareClick,
-  onExportCsvClick
+  metrics
 }) => {
   return (
-    <div className="panel-body">
-      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text)' }}>
-        Hasil Metrik: {methodName}
+    <div className="evaluation-strip-body">
+      {/* ─── Strip 4 Metrik Horizontal Bersekat Garis Sesuai Figma ─── */}
+      <div className="metrics-strip">
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">TOTAL WAKTU TRANSFER</span>
+            <MetricTooltip text="Total durasi siklus diskret yang dibutuhkan untuk mentransfer seluruh blok data ke memori." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.totalTransferTime.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">ms</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">CPU SIBUK</span>
+            <MetricTooltip text="Total waktu prosesor tersita untuk polling, mengeksekusi rutin interrupt (ISR), atau menyalin blok data." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.cpuBusyTime.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">ms</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">CPU BEBAS</span>
+            <MetricTooltip text="Waktu di mana prosesor terbebas dari operasi I/O dan dapat menjalankan instruksi komputasi aplikasi lain." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.cpuFreeTime.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">ms</span>
+          </div>
+        </div>
+
+        <div className="metric-strip-cell">
+          <div className="metric-label-row">
+            <span className="metric-label">UTILISASI CPU</span>
+            <MetricTooltip text="Persentase keterikatan CPU terhadap operasi I/O (CPU Sibuk ÷ Total Waktu Transfer)." />
+          </div>
+          <div className="metric-value-row">
+            <span className="metric-value-big">{metrics.cpuUtilization.toFixed(1).replace('.', ',')}</span>
+            <span className="metric-unit">%</span>
+          </div>
+        </div>
       </div>
 
-      <table className="table-compact">
-        <tbody>
-          <tr>
-            <th>Total Waktu Transfer</th>
-            <td className="metric-value">
-              <strong style={{ color: 'var(--color-active)', fontSize: '14px' }}>
-                {metrics.totalTransferTime}
-              </strong>{' '}
-              ms
-            </td>
-          </tr>
-          <tr>
-            <th>Utilisasi CPU (Pemakaian)</th>
-            <td className="metric-value">
-              <strong style={{
-                color: metrics.cpuUtilization > 75 ? 'var(--color-idle)' : (metrics.cpuUtilization < 20 ? 'var(--color-served)' : 'var(--color-waiting)'),
-                fontSize: '13px'
-              }}>
-                {metrics.cpuUtilization}%
-              </strong>
-              {metrics.cpuUtilization >= 100 && (
-                <div style={{ fontSize: '10px', color: 'var(--color-idle)' }}>
-                  ▲ 100% CPU terbuang untuk polling
-                </div>
-              )}
-              {metrics.cpuUtilization < 20 && (
-                <div style={{ fontSize: '10px', color: 'var(--color-served)' }}>
-                  ✓ Sangat efisien, CPU bebas komputasi
-                </div>
-              )}
-            </td>
-          </tr>
-          <tr>
-            <th>Waktu CPU Sibuk</th>
-            <td className="metric-value">
-              {metrics.cpuBusyTime} ms
-            </td>
-          </tr>
-          <tr>
-            <th>Waktu CPU Bebas (Free)</th>
-            <td className="metric-value">
-              <strong style={{ color: metrics.cpuFreeTime > 0 ? 'var(--color-served)' : 'var(--color-idle)' }}>
-                {metrics.cpuFreeTime} ms
-              </strong>
-            </td>
-          </tr>
-          <tr>
-            <th>Jumlah Interrupt Dipicu</th>
-            <td className="metric-value">
-              {metrics.interruptCount} kali
-            </td>
-          </tr>
-          <tr>
-            <th>Throughput Efektif</th>
-            <td className="metric-value">
-              {metrics.effectiveThroughput.toFixed(3)} KB/ms
-            </td>
-          </tr>
-          <tr>
-            <th>Total Blok Ditransfer</th>
-            <td className="metric-value">
-              {metrics.blocksCount} blok
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* Tombol Aksi */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={onCompareClick}
-          title="Bandingkan efisiensi CPU dan waktu ketiga metode transfer"
-        >
-          Bandingkan Ketiga Metode
-        </button>
-        <button
-          type="button"
-          className="btn"
-          onClick={onExportCsvClick}
-          title="Unduh metrik perbandingan transfer data dalam CSV"
-        >
-          Ekspor Hasil ke CSV
-        </button>
+      <div className="metric-footer-strip">
+        <span>Programmed I/O selesai lebih cepat tetapi mengunci 100% CPU. DMA melepas CPU untuk tugas komputasi lain.</span>
+        <span className="mono">semua durasi 1 desimal</span>
       </div>
     </div>
   );
