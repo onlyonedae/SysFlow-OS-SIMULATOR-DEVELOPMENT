@@ -16,7 +16,7 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
   const pIntervals = timeline.filter((it) => it.actor === 'producer' && it.state === 'working');
   const cIntervals = timeline.filter((it) => it.actor === 'consumer' && it.state === 'working');
 
-  // Buat 6 ticks waktu proporsional
+  // Buat ticks waktu proporsional
   const tickCount = 5;
   const ticks: number[] = [];
   for (let i = 0; i <= tickCount; i++) {
@@ -30,9 +30,9 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
       </div>
 
       <div className="timeline-tracks-wrapper">
-        {/* Track Producer */}
+        {/* Track Producer (Amber) */}
         <div className="timeline-track-row">
-          <span className="timeline-track-name">Producer</span>
+          <span className="timeline-track-name" style={{ color: '#E9A23B', fontWeight: 600 }}>Producer</span>
           <div className="timeline-track-bar-canvas">
             {pIntervals.map((inv, idx) => {
               const leftPct = (inv.startTime / safeTotalTime) * 100;
@@ -40,16 +40,22 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
               return (
                 <div
                   key={idx}
-                  className="timeline-segment-working"
+                  className="timeline-segment-producer"
                   style={{
                     left: `${leftPct}%`,
                     width: `${Math.max(0.5, widthPct)}%`
                   }}
-                  title={`Producer bekerja: t=${inv.startTime} - ${inv.endTime} ms`}
-                />
+                  title={`Producer memproses item #${inv.itemId}: t=${inv.startTime} - ${inv.endTime} ms`}
+                >
+                  {widthPct > 4 && (
+                    <span className="timeline-block-text" style={{ color: '#F0B357' }}>
+                      {inv.itemId ? `#${inv.itemId}` : ''}
+                    </span>
+                  )}
+                </div>
               );
             })}
-            {/* Playhead marker jika sedang disimulasikan */}
+            {/* Playhead marker */}
             {currentTime > 0 && currentTime <= safeTotalTime && (
               <div
                 style={{
@@ -58,7 +64,8 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
                   bottom: 0,
                   left: `${(currentTime / safeTotalTime) * 100}%`,
                   width: '2px',
-                  backgroundColor: 'var(--color-head-mark)',
+                  backgroundColor: '#FFFFFF',
+                  boxShadow: '0 0 4px #FFFFFF',
                   zIndex: 3
                 }}
               />
@@ -66,9 +73,9 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
           </div>
         </div>
 
-        {/* Track Consumer */}
+        {/* Track Consumer (Periwinkle) */}
         <div className="timeline-track-row">
-          <span className="timeline-track-name">Consumer</span>
+          <span className="timeline-track-name" style={{ color: '#9DB3FF', fontWeight: 600 }}>Consumer</span>
           <div className="timeline-track-bar-canvas">
             {cIntervals.map((inv, idx) => {
               const leftPct = (inv.startTime / safeTotalTime) * 100;
@@ -76,13 +83,19 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
               return (
                 <div
                   key={idx}
-                  className="timeline-segment-working"
+                  className="timeline-segment-consumer"
                   style={{
                     left: `${leftPct}%`,
                     width: `${Math.max(0.5, widthPct)}%`
                   }}
-                  title={`Consumer bekerja: t=${inv.startTime} - ${inv.endTime} ms`}
-                />
+                  title={`Consumer memproses item #${inv.itemId}: t=${inv.startTime} - ${inv.endTime} ms`}
+                >
+                  {widthPct > 4 && (
+                    <span className="timeline-block-text" style={{ color: '#C2D1FF' }}>
+                      {inv.itemId ? `#${inv.itemId}` : ''}
+                    </span>
+                  )}
+                </div>
               );
             })}
             {currentTime > 0 && currentTime <= safeTotalTime && (
@@ -93,7 +106,8 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
                   bottom: 0,
                   left: `${(currentTime / safeTotalTime) * 100}%`,
                   width: '2px',
-                  backgroundColor: 'var(--color-head-mark)',
+                  backgroundColor: '#FFFFFF',
+                  boxShadow: '0 0 4px #FFFFFF',
                   zIndex: 3
                 }}
               />
@@ -110,15 +124,19 @@ export const BufferTimeline: React.FC<BufferTimelineProps> = ({
         <span>ms</span>
       </div>
 
-      {/* Legend */}
+      {/* Legend Multi-Warna */}
       <div className="timeline-legend-row">
         <span>
-          <span className="timeline-legend-dot" style={{ backgroundColor: 'var(--color-accent)' }} />
-          bekerja
+          <span className="timeline-legend-dot" style={{ backgroundColor: '#E9A23B' }} />
+          Producer bekerja (I/O)
+        </span>
+        <span>
+          <span className="timeline-legend-dot" style={{ backgroundColor: '#9DB3FF' }} />
+          Consumer bekerja (CPU)
         </span>
         <span>
           <span className="timeline-legend-dot" style={{ backgroundColor: 'var(--color-sunk)', border: '1px solid var(--color-rule)' }} />
-          menganggur
+          menganggur (idle / stall)
         </span>
       </div>
     </div>

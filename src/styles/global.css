@@ -1917,6 +1917,10 @@ body {
   background-color: var(--color-accent-soft);
   border: 1px solid var(--color-accent);
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .timeline-segment-working::after {
@@ -1936,6 +1940,10 @@ body {
   background-color: var(--color-danger-soft);
   border: 1px solid var(--color-danger);
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .timeline-segment-danger::after {
@@ -1946,6 +1954,179 @@ body {
   right: 0;
   height: 2px;
   background-color: var(--color-danger);
+}
+
+/* ─── Segmen Semantik Khusus Buffering ─── */
+.timeline-segment-producer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(233, 162, 59, 0.16);
+  border: 1px solid #E9A23B;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-producer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #E9A23B;
+}
+
+.timeline-segment-consumer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(157, 179, 255, 0.16);
+  border: 1px solid #9DB3FF;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-consumer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #9DB3FF;
+}
+
+/* ─── Segmen Semantik Khusus Transfer Data ─── */
+.timeline-segment-polling {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(239, 68, 68, 0.2);
+  border: 1px solid #EF4444;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-polling::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #EF4444;
+}
+
+.timeline-segment-isr {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(245, 158, 11, 0.2);
+  border: 1px solid #F59E0B;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-isr::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #F59E0B;
+}
+
+.timeline-segment-dma-setup {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(129, 140, 248, 0.2);
+  border: 1px solid #818CF8;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-dma-setup::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #818CF8;
+}
+
+.timeline-segment-device {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(56, 189, 248, 0.18);
+  border: 1px solid #38BDF8;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-device::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #38BDF8;
+}
+
+.timeline-segment-memory {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(52, 211, 153, 0.18);
+  border: 1px solid #34D399;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.timeline-segment-memory::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #34D399;
+}
+
+.timeline-block-text {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .timeline-axis-ticks {
