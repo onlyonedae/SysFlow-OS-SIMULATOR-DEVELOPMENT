@@ -31,6 +31,13 @@ describe('Penjadwalan Disk - Uji Kasus Buku Teks Silberschatz', () => {
     expect(result.metrics.totalHeadMovement).toBe(236);
   });
 
+  it('Algoritma SCAN arah kanan harus menyapu sampai maxTrack (331) berbeda dari LOOK (299)', () => {
+    const scanRight = simulateSCAN({ ...textbookInput, direction: 'right' });
+    const lookRight = simulateLOOK({ ...textbookInput, direction: 'right' });
+    expect(scanRight.metrics.totalHeadMovement).toBe(331);
+    expect(lookRight.metrics.totalHeadMovement).toBe(299);
+  });
+
   it('Algoritma LOOK (arah awal ke 0) harus menghasilkan total pergerakan 208', () => {
     const result = simulateLOOK(textbookInput);
     expect(result.metrics.totalHeadMovement).toBe(208);

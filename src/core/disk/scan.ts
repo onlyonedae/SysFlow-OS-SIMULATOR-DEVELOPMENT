@@ -58,8 +58,8 @@ export function simulateSCAN(input: DiskSimulationInput): DiskSimulationResult {
       });
     }
 
-    // Jika masih ada request di sisi kanan, head harus menyentuh batas minTrack sebelum membalik arah
-    if (right.length > 0 && currentHead !== minTrack) {
+    // SCAN selalu menyapu hingga batas minTrack sebelum membalik arah jika ada request lanjutan atau untuk menyelesaikan sapuan penuh
+    if (currentHead !== minTrack) {
       stepCount++;
       const dist = Math.abs(minTrack - currentHead);
       totalMovement += dist;
@@ -76,7 +76,9 @@ export function simulateSCAN(input: DiskSimulationInput): DiskSimulationResult {
         servedRequestId: null,
         servedTrack: null,
         isJump: false,
-        explanation: `SCAN mencapai batas bawah silinder (${minTrack}) dan membalikkan arah pergerakan ke atas.`,
+        explanation: right.length > 0
+          ? `SCAN mencapai batas bawah silinder (${minTrack}) dan membalikkan arah pergerakan ke atas.`
+          : `SCAN mencapai batas bawah silinder (${minTrack}) untuk menyelesaikan sapuan penuh.`,
         remainingRequests: [...remaining],
         visitedTracks: [...visitedTracks]
       });
@@ -138,7 +140,8 @@ export function simulateSCAN(input: DiskSimulationInput): DiskSimulationResult {
       });
     }
 
-    if (left.length > 0 && currentHead !== maxTrack) {
+    // SCAN selalu menyapu hingga batas maxTrack sebelum membalik arah jika ada request lanjutan atau untuk menyelesaikan sapuan penuh
+    if (currentHead !== maxTrack) {
       stepCount++;
       const dist = Math.abs(maxTrack - currentHead);
       totalMovement += dist;
@@ -155,7 +158,9 @@ export function simulateSCAN(input: DiskSimulationInput): DiskSimulationResult {
         servedRequestId: null,
         servedTrack: null,
         isJump: false,
-        explanation: `SCAN mencapai batas atas silinder (${maxTrack}) dan membalikkan arah pergerakan ke bawah.`,
+        explanation: left.length > 0
+          ? `SCAN mencapai batas atas silinder (${maxTrack}) dan membalikkan arah pergerakan ke bawah.`
+          : `SCAN mencapai batas atas silinder (${maxTrack}) untuk menyelesaikan sapuan penuh.`,
         remainingRequests: [...remaining],
         visitedTracks: [...visitedTracks]
       });
