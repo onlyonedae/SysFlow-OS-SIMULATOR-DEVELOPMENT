@@ -53,17 +53,19 @@ export function simulateFCFS(input: DiskSimulationInput): DiskSimulationResult {
   }
 
   const seekTime = totalMovement * seekTimePerCylinder;
-  const avgWait = waitingTimes.length > 0 
+  const avgWaitCylinders = waitingTimes.length > 0 
     ? waitingTimes.reduce((a, b) => a + b, 0) / waitingTimes.length 
     : 0;
-  const maxWait = waitingTimes.length > 0 ? Math.max(...waitingTimes) : 0;
+  const maxWaitCylinders = waitingTimes.length > 0 ? Math.max(...waitingTimes) : 0;
+  const avgWaitMs = avgWaitCylinders * seekTimePerCylinder;
+  const maxWaitMs = maxWaitCylinders * seekTimePerCylinder;
   const throughput = seekTime > 0 ? (requests.length / seekTime) : 0;
 
   const metrics: DiskMetrics = {
     totalHeadMovement: totalMovement,
-    estimatedSeekTime: seekTime,
-    avgWaitingTime: Number(avgWait.toFixed(2)),
-    maxWaitingTime: maxWait,
+    estimatedSeekTime: Number(seekTime.toFixed(2)),
+    avgWaitingTime: Number(avgWaitMs.toFixed(2)),
+    maxWaitingTime: Number(maxWaitMs.toFixed(2)),
     throughput: Number(throughput.toFixed(4)),
     requestsCount: requests.length
   };

@@ -28,8 +28,8 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
       'Metode',
       'Total Head Movement (silinder)',
       'Estimasi Seek Time (ms)',
-      'Rata-rata Waktu Tunggu (silinder)',
-      'Maksimum Waktu Tunggu (silinder)',
+      'Rata-rata Waktu Tunggu (ms)',
+      'Maksimum Waktu Tunggu (ms)',
       'Throughput (req/ms)'
     ];
 
@@ -38,7 +38,7 @@ export const DiskCompareModal: React.FC<DiskCompareModalProps> = ({ input, onClo
       r.metrics.totalHeadMovement,
       r.metrics.estimatedSeekTime.toFixed(1),
       r.metrics.avgWaitingTime.toFixed(2),
-      r.metrics.maxWaitingTime,
+      r.metrics.maxWaitingTime.toFixed(2),
       r.metrics.throughput.toFixed(4)
     ]);
 

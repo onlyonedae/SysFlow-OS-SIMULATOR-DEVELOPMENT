@@ -29,11 +29,11 @@ export interface DiskStepTrace {
 }
 
 export interface DiskMetrics {
-  totalHeadMovement: number;
+  totalHeadMovement: number; // silinder/track
   estimatedSeekTime: number; // ms
-  avgWaitingTime: number;    // satuan silinder/waktu sampai request dilayani
-  maxWaitingTime: number;    // silinder/waktu terlama sebuah request menunggu (indikasi starvation)
-  throughput: number;        // request per 1000 silinder atau request/ms
+  avgWaitingTime: number;    // ms sampai request dilayani
+  maxWaitingTime: number;    // ms waktu terlama sebuah request menunggu (indikasi starvation)
+  throughput: number;        // request/ms
   requestsCount: number;
 }
 

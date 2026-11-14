@@ -69,4 +69,12 @@ describe('Penjadwalan Disk - Uji Kasus Buku Teks Silberschatz', () => {
     });
     expect(resultWithoutJump.metrics.totalHeadMovement).toBe(153);
   });
+
+  it('Metrik waktu tunggu rata-rata dan maksimum harus terkonversi dalam satuan ms', () => {
+    const result = simulateFCFS(textbookInput);
+    // textbookInput.seekTimePerCylinder = 0.5 ms
+    expect(result.metrics.estimatedSeekTime).toBe(640 * 0.5); // 320 ms
+    expect(result.metrics.avgWaitingTime).toBeGreaterThan(0);
+    expect(result.metrics.maxWaitingTime).toBeGreaterThan(0);
+  });
 });

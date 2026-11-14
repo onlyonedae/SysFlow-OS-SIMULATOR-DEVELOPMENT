@@ -32,8 +32,8 @@ export const App: React.FC = () => {
       'Metode',
       'Total Head Movement (silinder)',
       'Estimasi Seek Time (ms)',
-      'Rata-rata Waktu Tunggu (silinder)',
-      'Maksimum Waktu Tunggu (silinder)',
+      'Rata-rata Waktu Tunggu (ms)',
+      'Maksimum Waktu Tunggu (ms)',
       'Throughput (req/ms)'
     ];
     const rows = results.map((r) => [
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
       r.metrics.totalHeadMovement,
       r.metrics.estimatedSeekTime.toFixed(1),
       r.metrics.avgWaitingTime.toFixed(2),
-      r.metrics.maxWaitingTime,
+      r.metrics.maxWaitingTime.toFixed(2),
       r.metrics.throughput.toFixed(4)
     ]);
     downloadCsv(`sysflow-disk-metrics-${Date.now()}.csv`, headers, rows);
