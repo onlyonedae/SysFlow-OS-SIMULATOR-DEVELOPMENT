@@ -14,7 +14,7 @@
 
   --color-text:         #e2e8f0;
   --color-text-muted:   #8898aa;
-  --color-text-dim:     #4a6080;
+  --color-text-dim:     #8ba3c7;
 
   /* Aksen Teal */
   --color-accent:        #2dd4bf;
@@ -51,7 +51,7 @@
   --color-chassis-inner:   #111827;
   --color-chassis-node:    #1e293b;
   --color-chassis-text:    #e2e8f0;
-  --color-chassis-muted:   #4a6080;
+  --color-chassis-muted:   #8ba3c7;
   --color-chassis-muted-2: #94a3b8;
 
   /* Chart / timeline */
@@ -79,7 +79,7 @@
 
   --color-text:         #0f172a;
   --color-text-muted:   #475569;
-  --color-text-dim:     #94a3b8;
+  --color-text-dim:     #64748b;
 
   /* Aksen Teal (tetap konsisten) */
   --color-accent:        #0d9488;

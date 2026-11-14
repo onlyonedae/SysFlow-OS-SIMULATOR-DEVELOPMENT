@@ -18,10 +18,10 @@ export const App: React.FC = () => {
     return (localStorage.getItem('sysflow-theme') as Theme) ?? 'dark';
   });
 
-  // Terapkan data-theme ke <html> setiap kali tema berubah
+  // Terapkan data-theme dan color-scheme ke <html> setiap kali tema berubah
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    document.body.style.background = theme === 'dark' ? '#0d1117' : '#f1f5f9';
+    document.documentElement.style.colorScheme = theme;
     localStorage.setItem('sysflow-theme', theme);
   }, [theme]);
 
