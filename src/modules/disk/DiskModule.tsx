@@ -180,20 +180,18 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onExportCsv }) => {
           </div>
 
           {/* Kontrol Pemutaran */}
-          <div className="instrument-playback-bar">
-            <PlaybackControls
-              isPlaying={isPlaying}
-              currentStep={currentStep}
-              totalSteps={totalSteps}
-              speed={speed}
-              onPlay={handlePlay}
-              onPause={handlePause}
-              onStepForward={handleStepForward}
-              onStepBackward={handleStepBackward}
-              onReset={handleReset}
-              onSpeedChange={setSpeed}
-            />
-          </div>
+          <PlaybackControls
+            isPlaying={isPlaying}
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            speed={speed}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onStepForward={handleStepForward}
+            onStepBackward={handleStepBackward}
+            onReset={handleReset}
+            onSpeedChange={setSpeed}
+          />
 
           {/* Bar Narasi Sesuai Figma */}
           <div className="stage-narration-bar">

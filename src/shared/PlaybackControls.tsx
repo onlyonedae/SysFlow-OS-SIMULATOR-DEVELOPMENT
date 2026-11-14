@@ -5,6 +5,7 @@ export interface PlaybackControlsProps {
   currentStep: number;
   totalSteps: number;
   speed: number;
+  timeMs?: number;
   onPlay: () => void;
   onPause: () => void;
   onStepForward: () => void;
@@ -18,6 +19,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   currentStep,
   totalSteps,
   speed,
+  timeMs,
   onPlay,
   onPause,
   onStepForward,
@@ -33,7 +35,6 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
       if (target && target.closest('button, a, input, select, textarea, [role="button"], [role="slider"], [contenteditable]')) {
         return;
       }
-      // Jangan cegat pintasan jika modal sedang terbuka
       if (document.querySelector('[role="dialog"], .modal-overlay')) {
         return;
       }
@@ -56,117 +57,106 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPlaying, onPlay, onPause, onStepForward, onStepBackward, onReset]);
 
-  const progressPct = totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0;
-
   return (
-    <div className="playback-bar">
-      {/* ── Play/Pause Button ── */}
-      {isPlaying ? (
+    <div className="instrument-playback-bar">
+      {/* ── Cluster Tombol Navigasi Sesuai Tangkapan Layar ── */}
+      <div className="playback-controls-cluster">
+        {/* Grup 3 Tombol Bersegmen [⏮][▶/⏸][⏭] */}
+        <div className="playback-segmented-group" role="group" aria-label="Kontrol putar animasi">
+          {/* 1. Tombol Mundur (⏮) */}
+          <button
+            type="button"
+            className="playback-seg-btn"
+            onClick={onStepBackward}
+            disabled={currentStep <= 0}
+            title="Langkah sebelumnya (Panah Kiri)"
+            aria-label="Langkah sebelumnya"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="19 20 9 12 19 4 19 20" />
+              <line x1="5" y1="19" x2="5" y2="5" />
+            </svg>
+          </button>
+
+          {/* 2. Tombol Putar / Jeda (▶ / ⏸) */}
+          <button
+            type="button"
+            className="playback-seg-btn"
+            onClick={isPlaying ? onPause : onPlay}
+            disabled={!isPlaying && currentStep >= totalSteps}
+            title={isPlaying ? 'Jeda simulasi (Spasi)' : 'Putar simulasi (Spasi)'}
+            aria-label={isPlaying ? 'Jeda simulasi' : 'Putar simulasi'}
+          >
+            {isPlaying ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg>
+            ) : (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="6 3 20 12 6 21 6 3" />
+              </svg>
+            )}
+          </button>
+
+          {/* 3. Tombol Maju (⏭) */}
+          <button
+            type="button"
+            className="playback-seg-btn"
+            onClick={onStepForward}
+            disabled={currentStep >= totalSteps}
+            title="Langkah berikutnya (Panah Kanan)"
+            aria-label="Langkah berikutnya"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="5 4 15 12 5 20 5 4" />
+              <line x1="19" y1="5" x2="19" y2="19" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tombol Reset (↺) */}
         <button
           type="button"
-          id="playback-pause-btn"
-          className="playback-btn-play"
-          onClick={onPause}
-          title="Jeda pemutaran (Spasi)"
-          aria-label="Jeda simulasi"
+          className="playback-reset-btn"
+          onClick={onReset}
+          title="Reset simulasi ke awal (R)"
+          aria-label="Reset simulasi"
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="4" width="4" height="16" rx="1" />
-            <rect x="14" y="4" width="4" height="16" rx="1" />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
           </svg>
-          Jeda
         </button>
-      ) : (
-        <button
-          type="button"
-          id="playback-play-btn"
-          className="playback-btn-play"
-          onClick={onPlay}
-          disabled={currentStep >= totalSteps}
-          title="Putar simulasi (Spasi)"
-          aria-label="Mulai simulasi"
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5,3 19,12 5,21" />
-          </svg>
-          Lanjutkan
-        </button>
-      )}
-
-      {/* ── Step Backward ── */}
-      <button
-        type="button"
-        id="playback-back-btn"
-        className="playback-btn-icon"
-        onClick={onStepBackward}
-        disabled={currentStep <= 0}
-        title="Langkah mundur (←)"
-        aria-label="Langkah mundur"
-      >
-        ←
-      </button>
-
-      {/* ── Step Forward ── */}
-      <button
-        type="button"
-        id="playback-fwd-btn"
-        className="playback-btn-icon"
-        onClick={onStepForward}
-        disabled={currentStep >= totalSteps}
-        title="Langkah maju (→)"
-        aria-label="Langkah maju"
-      >
-        →
-      </button>
-
-      {/* ── Reset ── */}
-      <button
-        type="button"
-        id="playback-reset-btn"
-        className="btn btn-sm"
-        onClick={onReset}
-        title="Reset ke awal (R)"
-        aria-label="Reset simulasi"
-      >
-        Reset
-      </button>
-
-      {/* ── Progress Bar ── */}
-      <div
-        className="playback-progress-bar"
-        role="progressbar"
-        aria-valuenow={currentStep}
-        aria-valuemin={0}
-        aria-valuemax={totalSteps}
-        aria-label={`Langkah ${currentStep} dari ${totalSteps}`}
-      >
-        <div
-          className="playback-progress-fill"
-          style={{ width: `${progressPct}%` }}
-        />
       </div>
 
-      {/* ── Progress Label ── */}
-      <span className="playback-label">
-        {currentStep} / {totalSteps} • {progressPct.toFixed(1)}%
-      </span>
+      {/* ── Status Langkah & Waktu Real-Time ── */}
+      <div className="playback-step-status">
+        <span>LANGKAH</span>
+        <span className="status-tag">{currentStep}</span>
+        <span>/ {totalSteps}</span>
+        {timeMs !== undefined && (
+          <span style={{ color: 'var(--color-ink3)', marginLeft: '4px' }}>
+            · t = {timeMs} ms
+          </span>
+        )}
+      </div>
 
-      {/* ── Kecepatan ── */}
-      <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--color-text-dim)' }}>
-        <span>Kecepatan</span>
-        <select
-          id="playback-speed-select"
-          className="speed-select"
+      {/* ── Slider Kecepatan ── */}
+      <div className="playback-speed-wrap">
+        <span className="mono">Kecepatan:</span>
+        <input
+          type="range"
+          min="0.5"
+          max="3"
+          step="0.5"
           value={speed}
-          onChange={(e) => onSpeedChange(Number(e.target.value))}
+          onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
+          className="playback-speed-slider"
           aria-label="Kecepatan putar"
-        >
-          <option value={0.5}>0.5×</option>
-          <option value={1}>1×</option>
-          <option value={1.5}>1.5×</option>
-          <option value={2}>2×</option>
-        </select>
-      </label>
+        />
+        <span className="playback-speed-val mono">{speed.toFixed(1)}×</span>
+      </div>
     </div>
   );
 };

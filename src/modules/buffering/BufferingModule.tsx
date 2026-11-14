@@ -6,6 +6,7 @@ import { BufferSlotsView } from './BufferSlotsView';
 import { BufferTimeline } from './BufferTimeline';
 import { BufferingMetricsView } from './BufferingMetricsView';
 import { BufferingComparePanel } from './BufferingComparePanel';
+import { PlaybackControls } from '../../shared/PlaybackControls';
 import { downloadCsv } from '../../utils/exportCsv';
 
 export const BufferingModule: React.FC = () => {
@@ -172,66 +173,22 @@ export const BufferingModule: React.FC = () => {
           />
 
           {/* Bar Kontrol Playback */}
-          <div className="instrument-playback-bar">
-            <div className="playback-btns">
-              <button
-                type="button"
-                className="btn-playback"
-                onClick={handleStepBackward}
-                disabled={currentStep <= 0}
-                title="Langkah sebelumnya"
-              >
-                ◀
-              </button>
-              <button
-                type="button"
-                className="btn-playback primary"
-                onClick={isPlaying ? handlePause : handlePlay}
-                title={isPlaying ? 'Jeda simulasi' : 'Jalankan simulasi'}
-              >
-                {isPlaying ? '⏸' : '▶'}
-              </button>
-              <button
-                type="button"
-                className="btn-playback"
-                onClick={handleStepForward}
-                disabled={currentStep >= totalSteps}
-                title="Langkah berikutnya"
-              >
-                ▶
-              </button>
-              <button
-                type="button"
-                className="btn-playback"
-                onClick={handleReset}
-                title="Reset simulasi ke awal"
-              >
-                ↺
-              </button>
-            </div>
-
-            <div className="playback-status mono">
-              <span>LANGKAH {currentStep} / {totalSteps}</span>
-              <span className="playback-sub">· t = {currentTrace?.currentTime ?? 0} ms</span>
-            </div>
-
-            <div className="playback-speed">
-              <span className="speed-label">Kecepatan:</span>
-              <input
-                type="range"
-                min="0.5"
-                max="3"
-                step="0.5"
-                value={speed}
-                onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                className="speed-slider"
-              />
-              <span className="speed-value mono">{speed.toFixed(1)}×</span>
-            </div>
-          </div>
+          <PlaybackControls
+            isPlaying={isPlaying}
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            speed={speed}
+            timeMs={currentTrace?.currentTime ?? 0}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onStepForward={handleStepForward}
+            onStepBackward={handleStepBackward}
+            onReset={handleReset}
+            onSpeedChange={setSpeed}
+          />
 
           {/* Kotak Narasi Penjelasan Langkah */}
-          <div className="instrument-narration-box">
+          <div className="stage-narration-bar">
             <div className="narration-accent-line" />
             <div className="narration-content">
               <div className="narration-step-tag">LANGKAH {currentStep}</div>
