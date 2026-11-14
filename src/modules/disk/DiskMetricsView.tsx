@@ -17,6 +17,7 @@ export const DiskMetricsView: React.FC<DiskMetricsViewProps> = ({
   currentStep,
   totalSteps,
   currentTrace,
+  onCompareClick,
   onExportCsvClick
 }) => {
   const isPartial = currentStep < totalSteps;
@@ -142,15 +143,24 @@ export const DiskMetricsView: React.FC<DiskMetricsViewProps> = ({
       )}
 
       {/* ─── Aksi ─── */}
-      <button
-        type="button"
-        className="btn btn-sm"
-        onClick={onExportCsvClick}
-        title="Unduh metrik dalam format CSV"
-        style={{ marginTop: 'auto' }}
-      >
-        ↓ Ekspor CSV
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'auto' }}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={onCompareClick}
+          title="Bandingkan performa keenam algoritma disk scheduling"
+        >
+          Bandingkan Semua Algoritma
+        </button>
+        <button
+          type="button"
+          className="btn btn-sm"
+          onClick={onExportCsvClick}
+          title="Unduh metrik dalam format CSV"
+        >
+          ↓ Ekspor CSV
+        </button>
+      </div>
     </div>
   );
 };

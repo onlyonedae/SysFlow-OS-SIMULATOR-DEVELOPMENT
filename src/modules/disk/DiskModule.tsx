@@ -18,7 +18,7 @@ export interface DiskModuleProps {
   onExportCsv: (results: DiskSimulationResult[]) => void;
 }
 
-export const DiskModule: React.FC<DiskModuleProps> = ({ onExportCsv }) => {
+export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportCsv }) => {
   // Input Default: Kasus Buku Teks Silberschatz
   const [algorithm, setAlgorithm] = useState<DiskAlgorithm>('SSTF');
   const [input, setInput] = useState<DiskSimulationInput>({
@@ -206,7 +206,7 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onExportCsv }) => {
             currentStep={currentStep}
             totalSteps={totalSteps}
             currentTrace={currentTrace}
-            onCompareClick={handleExportCsv}
+            onCompareClick={() => onOpenCompare(input)}
             onExportCsvClick={handleExportCsv}
           />
         </section>
