@@ -25,20 +25,31 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   onReset,
   onSpeedChange
 }) => {
-  // Dukungan keyboard
+  // Dukungan keyboard aksesibel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;
+      if (e.repeat) return;
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest('button, a, input, select, textarea, [role="button"], [role="slider"], [contenteditable]')) {
+        return;
+      }
+      // Jangan cegat pintasan jika modal sedang terbuka
+      if (document.querySelector('[role="dialog"], .modal-overlay')) {
+        return;
+      }
+
       if (e.code === 'Space') {
         e.preventDefault();
         if (isPlaying) onPause(); else onPlay();
       } else if (e.code === 'ArrowRight') {
-        e.preventDefault(); onStepForward();
+        e.preventDefault();
+        onStepForward();
       } else if (e.code === 'ArrowLeft') {
-        e.preventDefault(); onStepBackward();
+        e.preventDefault();
+        onStepBackward();
       } else if (e.key === 'r' || e.key === 'R') {
-        e.preventDefault(); onReset();
+        e.preventDefault();
+        onReset();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
