@@ -37,10 +37,11 @@ body {
   background-color: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   padding: 0 var(--space-xl);
-  height: 48px;
+  min-height: 48px;
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: var(--space-md);
 }
 
 .brand-section {
@@ -958,6 +959,31 @@ body {
 
 .head-scanner-beam {
   animation: headScanner 0.8s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .nav-tabs {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    border-top: 1px solid var(--color-border-subtle);
+    padding-top: var(--space-xs);
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .status-indicator {
+    display: none;
+  }
 }
 
 /* ═══════════════════════════════════════
