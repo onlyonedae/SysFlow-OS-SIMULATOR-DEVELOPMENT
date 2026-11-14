@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { DiskAlgorithm, DiskSimulationInput, Direction } from '../../core/disk';
+import { DEFAULT_SEEK_TIME_PER_CYLINDER } from '../../core/disk';
 
 export interface DiskParamsFormProps {
   algorithm: DiskAlgorithm;
@@ -104,7 +105,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
       maxTrack: 199,
       direction: 'left',
       countJumpReturn: true,
-      seekTimePerCylinder: input.seekTimePerCylinder ?? 0.1
+      seekTimePerCylinder: input.seekTimePerCylinder ?? DEFAULT_SEEK_TIME_PER_CYLINDER
     });
   };
 

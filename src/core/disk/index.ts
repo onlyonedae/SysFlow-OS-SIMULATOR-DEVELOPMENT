@@ -12,6 +12,8 @@ export { simulateLOOK, simulateCLOOK } from './look';
 
 export type DiskAlgorithm = 'FCFS' | 'SSTF' | 'SCAN' | 'C-SCAN' | 'LOOK' | 'C-LOOK';
 
+export const DEFAULT_SEEK_TIME_PER_CYLINDER = 0.5; // ms per track
+
 export function runDiskSimulation(algorithm: DiskAlgorithm, input: DiskSimulationInput): DiskSimulationResult {
   switch (algorithm) {
     case 'FCFS':

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { DiskStepTrace } from '../../core/disk';
+import { DEFAULT_SEEK_TIME_PER_CYLINDER } from '../../core/disk';
 
 export interface DiskPlatterViewProps {
   currentTrace: DiskStepTrace | undefined;
@@ -7,6 +8,7 @@ export interface DiskPlatterViewProps {
   maxTrack: number;
   allRequests: number[];
   isPlaying: boolean;
+  seekTimePerCylinder?: number;
 }
 
 export const DiskPlatterView: React.FC<DiskPlatterViewProps> = ({
@@ -14,7 +16,8 @@ export const DiskPlatterView: React.FC<DiskPlatterViewProps> = ({
   minTrack,
   maxTrack,
   allRequests,
-  isPlaying
+  isPlaying,
+  seekTimePerCylinder
 }) => {
   const headPos = currentTrace ? currentTrace.headPosition : minTrack;
   const trackRange = Math.max(maxTrack - minTrack, 1);
@@ -45,7 +48,8 @@ export const DiskPlatterView: React.FC<DiskPlatterViewProps> = ({
   const remainingSet = new Set(currentTrace?.remainingRequests || []);
   const isServingNow = Boolean(currentTrace && currentTrace.servedTrack !== null && currentTrace.stepIndex > 0);
   const isMoving = Boolean(currentTrace && currentTrace.distance > 0);
-  const seekTime = isMoving && currentTrace ? (currentTrace.distance * 0.1).toFixed(1).replace('.', ',') : '0,0';
+  const seekFactor = seekTimePerCylinder ?? DEFAULT_SEEK_TIME_PER_CYLINDER;
+  const seekTime = isMoving && currentTrace ? (currentTrace.distance * seekFactor).toFixed(1).replace('.', ',') : '0,0';
   const headPercent = ((normalizedHead) * 100).toFixed(0);
 
   return (

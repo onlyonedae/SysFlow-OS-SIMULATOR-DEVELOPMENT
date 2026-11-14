@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { runDiskSimulation } from '../../core/disk';
+import { runDiskSimulation, DEFAULT_SEEK_TIME_PER_CYLINDER } from '../../core/disk';
 import type {
   DiskAlgorithm,
   DiskSimulationInput,
@@ -28,7 +28,7 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportC
     maxTrack: 199,
     direction: 'left',
     countJumpReturn: true,
-    seekTimePerCylinder: 0.1
+    seekTimePerCylinder: DEFAULT_SEEK_TIME_PER_CYLINDER
   });
 
   // Jalankan simulasi murni saat input atau algoritma berubah
@@ -229,6 +229,7 @@ export const DiskModule: React.FC<DiskModuleProps> = ({ onOpenCompare, onExportC
             maxTrack={input.maxTrack}
             allRequests={input.requests}
             isPlaying={isPlaying}
+            seekTimePerCylinder={input.seekTimePerCylinder ?? DEFAULT_SEEK_TIME_PER_CYLINDER}
           />
         </section>
 

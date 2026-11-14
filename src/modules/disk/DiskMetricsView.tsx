@@ -63,7 +63,7 @@ export const DiskMetricsView: React.FC<DiskMetricsViewProps> = ({
       </div>
 
       <p className="metric-note">
-        Seek = 0,1 ms/track. Tunggu dihitung dari t=0 hingga head tiba pada request.
+        Seek = {(metrics.totalHeadMovement > 0 ? (metrics.estimatedSeekTime / metrics.totalHeadMovement) : 0.5).toFixed(1).replace('.', ',')} ms/track. Tunggu dihitung dari t=0 hingga head tiba pada request.
       </p>
 
       <hr className="divider" />
