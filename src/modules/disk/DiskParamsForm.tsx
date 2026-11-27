@@ -23,7 +23,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
   const [countJumpReturn, setCountJumpReturn] = useState<boolean>(input.countJumpReturn);
   const [newTrackText, setNewTrackText] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeScenario, setActiveScenario] = useState<'buku' | 'kluster' | 'acak'>('buku');
+  const [activeScenario, setActiveScenario] = useState<'buku' | 'silberschatz' | 'kluster' | 'acak'>('buku');
 
   // Perbarui saat input eksternal berubah
   useEffect(() => {
@@ -129,6 +129,24 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
     });
   };
 
+  const handleApplySilberschatzPreset = () => {
+    setActiveScenario('silberschatz');
+    setInitialHeadText('53');
+    setMaxTrackText('199');
+    setDirection('left');
+    setCountJumpReturn(true);
+    setErrorMessage(null);
+    onInputChange({
+      requests: [98, 183, 37, 122, 14, 124, 65, 67],
+      initialHead: 53,
+      minTrack: 0,
+      maxTrack: 199,
+      direction: 'left',
+      countJumpReturn: true,
+      seekTimePerCylinder: input.seekTimePerCylinder ?? DEFAULT_SEEK_TIME_PER_CYLINDER
+    });
+  };
+
   const handleApplyStarvationExample = () => {
     setActiveScenario('kluster');
     setInitialHeadText('50');
@@ -187,7 +205,7 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
       {/* ── 2. Skenario ── */}
       <div className="control-group">
         <label className="control-label">Skenario</label>
-        <div className="scenario-row">
+        <div className="scenario-row disk-scenario-row">
           <button
             type="button"
             className={`choice-btn ${activeScenario === 'buku' ? 'active' : ''}`}
@@ -209,12 +227,24 @@ export const DiskParamsForm: React.FC<DiskParamsFormProps> = ({
           >
             Acak
           </button>
+          <button
+            type="button"
+            className={`choice-btn ${activeScenario === 'silberschatz' ? 'active' : ''}`}
+            onClick={handleApplySilberschatzPreset}
+          >
+            Preset Silberschatz
+          </button>
         </div>
         <div className="control-caption">
           {activeScenario === 'buku' && (
             <>
               Buku teks: head 53, 8 request (Silberschatz).<br />
               Amati: total gerak LOOK 208 vs FCFS 640.
+            </>
+          )}
+          {activeScenario === 'silberschatz' && (
+            <>
+              Silberschatz 9th Edition, Bab 10: head 53, antrean 8 request, rentang 0–199, arah SCAN menuju 0.
             </>
           )}
           {activeScenario === 'kluster' && (
