@@ -4,6 +4,7 @@ import { BufferingModule } from './modules/buffering/BufferingModule';
 import { TransferModule } from './modules/transfer/TransferModule';
 import { FormulasView } from './modules/formulas/FormulasView';
 import { DiskCompareModal } from './modules/disk/DiskCompareModal';
+import { UsageGuideModal } from './shared/UsageGuideModal';
 import type { DiskSimulationInput, DiskSimulationResult } from './core/disk';
 import { downloadCsv } from './utils/exportCsv';
 
@@ -13,6 +14,7 @@ type Theme = 'dark' | 'light';
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('disk');
   const [diskCompareInput, setDiskCompareInput] = useState<DiskSimulationInput | null>(null);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
     // Baca preferensi tersimpan, default dark
     return (localStorage.getItem('sysflow-theme') as Theme) ?? 'dark';
@@ -78,6 +80,16 @@ export const App: React.FC = () => {
         </nav>
 
         <div className="header-actions">
+          <button
+            type="button"
+            className="btn btn-sm"
+            onClick={() => setIsGuideOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isGuideOpen}
+          >
+            Panduan
+          </button>
+
           {/* ─── Theme Toggle Sesuai Figma ─── */}
           <button
             type="button"
@@ -134,6 +146,10 @@ export const App: React.FC = () => {
           input={diskCompareInput}
           onClose={() => setDiskCompareInput(null)}
         />
+      )}
+
+      {isGuideOpen && (
+        <UsageGuideModal onClose={() => setIsGuideOpen(false)} />
       )}
     </div>
   );

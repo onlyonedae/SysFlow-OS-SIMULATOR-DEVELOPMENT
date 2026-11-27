@@ -5,13 +5,15 @@ export interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   maxWidth?: string;
+  closeButtonContent?: React.ReactNode;
 }
 
 export const Modal: React.FC<ModalProps> = ({
   title,
   onClose,
   children,
-  maxWidth = '820px'
+  maxWidth = '820px',
+  closeButtonContent = 'Tutup [Esc]'
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
@@ -105,7 +107,7 @@ export const Modal: React.FC<ModalProps> = ({
             onClick={onClose}
             aria-label="Tutup jendela modal"
           >
-            Tutup [Esc]
+            {closeButtonContent}
           </button>
         </div>
 
