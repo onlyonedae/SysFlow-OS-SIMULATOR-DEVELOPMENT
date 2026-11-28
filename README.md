@@ -1,6 +1,9 @@
 # SysFlow — Simulator Manajemen I/O Sistem Operasi
 
-SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif berbasis web yang dibangun untuk tugas UAS mata kuliah Sistem Operasi. Aplikasi ini dirancang sebagai instrumen teknis bagi mahasiswa dan dosen untuk memvisualisasikan, menganalisis, dan membandingkan efisiensi algoritma I/O langkah demi langkah.
+SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif berbasis web yang dibangun untuk tugas akhir (UAS) mata kuliah Sistem Operasi — Program Studi Informatika, Fakultas Teknik, Universitas Siliwangi (2026). Aplikasi ini dirancang sebagai instrumen teknis bagi mahasiswa dan dosen untuk memvisualisasikan, menganalisis, dan membandingkan efisiensi algoritma I/O langkah demi langkah.
+
+* **Live Demo Aplikasi**: [https://sys-flow-os-simulator-development.vercel.app](https://sys-flow-os-simulator-development.vercel.app)
+* **Repositori GitHub**: [https://github.com/onlyonedae/SysFlow-OS-SIMULATOR-DEVELOPMENT](https://github.com/onlyonedae/SysFlow-OS-SIMULATOR-DEVELOPMENT)
 
 ---
 
@@ -8,48 +11,48 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
 
 ### 1. Penjadwalan I/O (Disk Scheduling)
 * **Metode**: FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK.
-* **Input**: Antrean request silinder, posisi head awal, rentang track (0–199), arah awal gerakan head (menuju 0 / menuju akhir), serta opsi penghitungan lompatan kembali pada C-SCAN/C-LOOK.
+* **Input**: Antrean request silinder, posisi head awal, rentang track (`0–199` hingga `0–999`), arah awal gerakan head (menuju `0` / menuju akhir), serta opsi penghitungan lompatan kembali pada C-SCAN/C-LOOK.
 * **Visualisasi**: 
   * Grafik jalur pergerakan head (sumbu X: nomor track, sumbu Y: urutan langkah).
-  * Mekanisme fisik piringan (*platter*) berputar dengan lengan actuator mekanik yang bergerak presisi mengikuti silinder aktif.
-* **Metrik**: Total head movement, estimasi seek time, rata-rata dan maksimum waktu tunggu (deteksi starvation), throughput.
-* **Uji Kasus Buku Teks Silberschatz**: Antrean `98, 183, 37, 122, 14, 124, 65, 67`, head awal `53`, track `0-199`, arah ke `0`. Hasil: FCFS = 640, SSTF = 236, SCAN = 236, LOOK = 208 silinder.
+  * Mekanisme fisik piringan (*platter*) 2D dengan lengan aktuator mekanik yang bergerak presisi mengikuti silinder aktif.
+* **Metrik**: Total head movement, estimasi seek time, rata-rata dan maksimum waktu tunggu, serta throughput.
+* **Uji Kasus Buku Teks Silberschatz**: Antrean `98, 183, 37, 122, 14, 124, 65, 67`, head awal `53`, track `0–199`, arah ke `0`. Hasil: FCFS = `640`, SSTF = `236`, SCAN = `236`, LOOK = `208` silinder.
 
 ### 2. Strategi Buffering (I/O Buffering)
 * **Metode**: Tanpa Buffer (*Unbuffered*), Single Buffer, Double Buffer (*Ping-Pong*), Circular Buffer (*FIFO*).
-* **Model**: Producer (I/O Device) dan Consumer (CPU) dengan parameter waktu transfer $T$, waktu komputasi $C$, dan kapasitas slot buffer.
-* **Visualisasi**: Status slot buffer interaktif (*kosong, sedang diisi, penuh, sedang dikosongkan*) serta diagram timing aktivitas yang memperlihatkan waktu menganggur (*idle/stall*).
-* **Metrik**: Total waktu selesai, throughput, waktu idle producer dan consumer, persentase utilisasi, rata-rata keterisian buffer, speedup factor.
+* **Model**: Producer (I/O Device) dan Consumer (CPU) dengan parameter waktu transfer T, waktu komputasi C, jumlah item M, dan kapasitas slot buffer.
+* **Visualisasi**: Status slot buffer interaktif (*kosong, diisi, penuh, diambil*) serta diagram timeline aktivitas sejajar yang memperlihatkan momen menganggur (*idle/stall*).
+* **Metrik**: Total waktu selesai, throughput, waktu idle producer dan consumer, persentase utilisasi, rata-rata keterisian buffer, dan speedup factor.
 
 ### 3. Metode Transfer Data
 * **Metode**: Programmed I/O (*Polling*), Interrupt-Driven I/O, Direct Memory Access (*DMA*).
-* **Input**: Ukuran data total, ukuran blok, waktu baca perangkat hardware, biaya penanganan satu interrupt, waktu inisialisasi setup DMA.
-* **Visualisasi**: Timing diagram 3 jalur sinkron (*CPU, Device Controller, Memori Utama*) serta topologi bus perangkat keras.
-* **Metrik**: Total waktu transfer, waktu CPU sibuk (*busy*), waktu CPU bebas (*free*), persentase utilisasi CPU, jumlah interrupt yang dipicu, throughput efektif.
+* **Input**: Ukuran data total, ukuran blok, waktu baca perangkat hardware, biaya penanganan satu interrupt (ISR), waktu inisialisasi setup DMA, dan waktu salin CPU.
+* **Visualisasi**: Timing diagram 3 jalur sinkron (*CPU, Device Controller, Memori Utama*) serta topologi interkoneksi bus perangkat keras.
+* **Metrik**: Total waktu transfer, waktu CPU sibuk (*busy*), waktu CPU bebas (*free*), persentase utilisasi CPU, jumlah interrupt yang dipicu, dan throughput efektif.
 
 ---
 
 ## Fitur Unggulan Sistem
 
-* **Kontrol Putar Interaktif**: Play, Pause, Step Maju, Step Mundur, Reset, dan pengatur kecepatan putar (0.5x – 2x).
+* **Kontrol Putar Interaktif**: Play, Pause, Step Maju, Step Mundur, Reset, dan pengatur kecepatan putar (`0.5× – 3.0×`).
 * **Navigasi Keyboard Penuh**: 
   * `Spasi`: Play / Pause
   * `Panah Kanan`: Step Maju
   * `Panah Kiri`: Step Mundur
   * `R` / `r`: Reset Simulasi
-* **Panel Narasi Langkah**: Satu kalimat teknis per langkah yang menjelaskan keputusan algoritma secara deterministik.
-* **Mode Bandingkan**: Modal komparasi metrik berdampingan dengan nilai terbaik bertanda `✓`, dilengkapi grafik batang berlabel sumbu dan satuan resmi untuk seluruh modul (Disk, Buffering, dan Transfer).
-* **Ekspor CSV**: Mengunduh seluruh hasil perbandingan dengan standar UTF-8 BOM dan proteksi spreadsheet.
-* **Halaman Rumus & Asumsi**: Dokumentasi model matematika lengkap per modul untuk pertanggungjawaban akademis saat presentasi.
-* **Aksesibilitas Penuh**: Memenuhi rasio kontras minimum WCAG AA (≥ 4.5:1), navigasi keyboard penuh, modal dialog dengan focus trap, dan dukungan `prefers-reduced-motion`.
+* **Panel Narasi Langkah**: Satu kalimat teknis deterministik per langkah yang menjelaskan keputusan algoritma secara langsung.
+* **Panel Evaluasi Komparatif Terintegrasi**: Tabel perbandingan seluruh metode berdampingan pada tahap evaluasi (*Stage 3*) dengan penebalan nilai terbaik, grafik batang proporsional relatif, serta pemilihan metode langsung dengan klik baris.
+* **Ekspor CSV**: Mengunduh seluruh hasil perbandingan dengan standar UTF-8 BOM dan proteksi formula spreadsheet (RFC 4180).
+* **Halaman Rumus, Asumsi & Tim**: Dokumentasi model matematika lengkap per modul, batasan simulasi, serta informasi pembagian kerja tim.
+* **Tema & Aksesibilitas Penuh**: Mendukung mode gelap (*Dark*) dan mode terang (*Light*), memenuhi rasio kontras minimum WCAG AA (≥ 4.5:1), navigasi keyboard penuh, modal dialog dengan focus trap, dan dukungan `prefers-reduced-motion`.
 
 ---
 
 ## Batasan & Asumsi Model Simulasi
 
 1. **Penjadwalan Disk**:
-   - Default estimasi seek time: `0.5 ms/silinder` (dapat dikonfigurasi).
-   - Seluruh request diasumsikan telah tiba di antrean pada $t = 0$.
+   - Default estimasi seek time: `0.5 ms/silinder`.
+   - Seluruh request diasumsikan telah tiba di antrean pada t = 0.
    - Algoritma SCAN selalu menyapu hingga silinder batas fisik (`0` atau `maxTrack`) sebelum membalik arah gerak lengan aktuator.
    - Waktu tunggu rata-rata dan maksimum dikonversikan secara presisi dalam satuan milidetik (`ms`).
 
@@ -58,17 +61,18 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
    - Model Double Buffer dan Circular Buffer memanfaatkan pergantian slot aktif untuk mencapai konkurensi transfer I/O dan komputasi CPU.
 
 3. **Metode Transfer Data**:
-   - Programmed I/O menyibukkan 100% CPU selama seluruh proses transfer blok data (polling terus-menerus).
+   - Programmed I/O menyibukkan 100% CPU selama seluruh proses transfer blok data (*polling* terus-menerus).
    - Interrupt-Driven I/O membebaskan siklus CPU di sela-sela transfer perangkat keras dan hanya membebankan penanganan ISR per blok.
-   - DMA (Direct Memory Access) membebaskan CPU hampir secara keseluruhan kecuali saat persiapan awal dan sinyal interupsi penyelesaian seluruh transfer data.
+   - DMA (*Direct Memory Access*) membebaskan CPU hampir secara keseluruhan kecuali saat persiapan awal (`T_setup`) dan satu sinyal interupsi penyelesaian seluruh transfer data (`T_int`).
 
 ---
 
 ## Teknologi & Arsitektur
 
 * **Framework**: React 19 + TypeScript + Vite.
+* **Testing**: Vitest untuk pengujian unit matematis deterministik.
 * **Styling**: Vanilla CSS murni dengan sistem token semantik (`src/styles/tokens.css` dan `global.css`), ramah aksesibilitas WCAG AA, dan menghormati `prefers-reduced-motion`.
-* **Arsitektur Kode**: Logika simulasi berupa fungsi murni (*pure functions*) yang terisolasi total dari antarmuka React (`src/core/`), sehingga memudahkan unit test dan kolaborasi tim tanpa konflik Git.
+* **Arsitektur Kode**: Logika simulasi berupa fungsi murni (*pure functions*) yang terisolasi total dari antarmuka React (`src/core/`), sehingga menjamin determinisme dan memudahkan pengujian unit.
 
 ---
 
@@ -79,9 +83,10 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
 * NPM
 
 ### Langkah Menjalankan
-1. Clone repositori atau buka direktori proyek:
+1. Clone repositori dan masuk ke direktori proyek:
    ```bash
-   cd "PROJEK SISOP"
+   git clone https://github.com.git
+   cd SysFlow-OS-SIMULATOR-DEVELOPMENT
    ```
 2. Instal dependensi:
    ```bash
@@ -95,7 +100,7 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
 
 4. Menjalankan Unit Test Algoritma:
    ```bash
-   npm run test
+   npx vitest run
    ```
 
 5. Membangun Bundel Produksi:
@@ -107,31 +112,31 @@ SysFlow adalah simulator manajemen input/output (I/O) sistem operasi interaktif 
 
 ## Struktur Folder Proyek
 
-```
+```text
 src/
 ├── core/                   # FUNGSI MURNI SIMULASI (Bebas dari React/DOM)
-│   ├── disk/               # Modul 1: Algoritma FCFS, SSTF, SCAN, LOOK & Unit Test
-│   ├── buffering/          # Modul 2: Model Unbuffered, Single, Double, Circular
-│   └── transfer/           # Modul 3: Model Polling, Interrupt, DMA
+│   ├── disk/               # Modul 1: Algoritma FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK & Unit Test
+│   ├── buffering/          # Modul 2: Model Unbuffered, Single, Double, Circular & Unit Test
+│   └── transfer/           # Modul 3: Model Polling, Interrupt, DMA & Unit Test
 ├── modules/                # ANTARMUKA PENGGUNA PER MODUL
-│   ├── disk/               # Visualisasi piringan, grafik koordinat, kontrol, metrik
+│   ├── disk/               # Visualisasi piringan, grafik koordinat, kontrol, evaluasi
 │   ├── buffering/          # Visualisasi slot buffer & diagram timing aktivitas
 │   ├── transfer/           # Timing diagram 3 jalur & skema topologi bus
-│   └── formulas/           # Halaman rumus akademis & asumsi model waktu
-├── shared/                 # Komponen UI bersama (Playback, Narasi, Kontrol)
-├── styles/                 # Desain sistem, token semantik, & animasi mekanik
-└── utils/                  # Utilitas ekspor CSV
+│   └── formulas/           # Halaman rumus akademis, asumsi model waktu & tim
+├── shared/                 # Komponen UI bersama (PlaybackControls, Modal, Tooltip, Panduan)
+├── styles/                 # Desain sistem, token semantik (Dark/Light), & animasi mekanik
+└── utils/                  # Utilitas ekspor CSV (UTF-8 BOM)
 ```
 
 ---
 
 ## Pembagian Kerja & Anggota Tim
 
-| No | Peran / Pembagian Kerja | Lingkup Modul |
-|---|---|---|
-| 1 | Pengembang Logika Penjadwalan Disk | `src/core/disk/` (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK) |
-| 2 | Desainer Visualisasi Piringan & Jalur Disk | `src/modules/disk/` (DiskPlatterView, DiskTrackChart, Params) |
-| 3 | Pengembang Logika Strategi Buffering | `src/core/buffering/` (Unbuffered, Single, Double, Circular) |
-| 4 | Desainer Visualisasi Slot Buffer & Timeline | `src/modules/buffering/` (BufferSlotsView, BufferTimeline) |
-| 5 | Pengembang Logika Metode Transfer Data | `src/core/transfer/` (Programmed I/O, Interrupt, DMA) |
-| 6 | Desainer Timing Diagram 3 Jalur & Integrasi Sistem | `src/modules/transfer/` & `src/modules/formulas/` |
+Proyek ini disusun secara kolaboratif oleh mahasiswa Program Studi Informatika, Fakultas Teknik, Universitas Siliwangi (2026):
+
+| No | Nama Mahasiswa | NPM | GitHub | Peran Utama & Lingkup Modul |
+|---|---|---|---|---|
+| 1 | **Febriana Nugraha** | `257006111129` | [@onlyonedae](https://github.com) | **Core Engine Developer — Disk Scheduling**<br>Perancangan model matematika & logika murni 6 algoritma disk (`src/core/disk/`), sanitasi input, dan unit testing Silberschatz. |
+| 2 | **Muhamad Alfian Holidi** | `257006111136` | [@Mhyre](https://github.com) | **Lead Front-End UI/UX, Systems Integrator & Laporan**<br>Pengembangan UI panel instrumen (`src/modules/`), visualisasi piringan & buffer, integrasi antar-modul, halaman rumus, ekspor CSV, dan laporan. |
+| 3 | **Nadhif Ali Zuhdi** | `257006111155` | [@nanakimi75](https://github.com) | **Core Engine Developer — I/O Buffering Strategy**<br>Perancangan model producer-consumer & antrean slot (`src/core/buffering/`), kalkulasi speedup & idle time, dan unit testing. |
+| 4 | **Diva Hendra** | `257006111182` | [@divahendraramadhan](https://github.com) | **Core Engine Developer — Hardware Data Transfer**<br>Implementasi simulasi transfer data bus (`src/core/transfer/`), kalkulasi siklus CPU vs controller, overhead ISR, dan unit testing. |
