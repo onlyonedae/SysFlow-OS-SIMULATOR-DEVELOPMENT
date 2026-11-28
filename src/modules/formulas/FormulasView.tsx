@@ -111,7 +111,7 @@ export const FormulasView: React.FC = () => {
                 <div>DMA        : T_total = T_setup + B × T_dev + T_int   → CPU = T_setup + T_int</div>
               </div>
               <p className="formula-section-p">
-                DMA lebih lambat pada contoh bawaan (85 ms vs 96 ms) tetapi hanya memakai 5 ms CPU. Programmed I/O tampak lebih cepat karena CPU ikut menunggu perangkat, bukan karena perangkatnya lebih cepat.
+                DMA lebih cepat pada contoh bawaan (85 ms vs 96 ms pada Programmed I/O dan 128 ms pada Interrupt-Driven) sekaligus hanya memakai 5 ms waktu CPU. Programmed I/O mengunci 100% siklus CPU untuk menunggu perangkat melalui polling.
               </p>
             </section>
           )}
@@ -160,31 +160,41 @@ export const FormulasView: React.FC = () => {
             </section>
           )}
 
-          {/* Section 5: Tim & Pembagian Kerja */}
+                    {/* Section 5: Tim & Pembagian Kerja */}
           {activeSection === 'team' && (
             <section className="formula-section-block">
               <h2 className="formula-section-title">Tim &amp; Pembagian Kerja</h2>
               <p className="formula-section-p">
-                Proyek Rekayasa Perangkat Lunak Simulator Sistem Operasi (SysFlow) untuk Ujian Akhir Semester (UAS) Sistem Operasi.
+                Proyek Rekayasa Perangkat Lunak Simulator Sistem Operasi (SysFlow) untuk Ujian Akhir Semester (UAS) mata kuliah Sistem Operasi — Program Studi Informatika, Universitas Siliwangi (2026).
               </p>
               <table className="assumption-table">
                 <tbody>
                   <tr className="assumption-row">
-                    <td className="assumption-cell-name">Pengembang</td>
+                    <td className="assumption-cell-name">Anggota 1</td>
                     <td className="assumption-cell-desc">
-                      <strong>Mhyre</strong> (muhammad123.123alfian@gmail.com)
+                      <strong>Febriana Nugraha</strong> (NPM: 257006111129) — GitHub: <strong>onlyonedae</strong><br />
+                      Core Engine Developer (Disk Scheduling) — Perancangan model matematika &amp; logika murni 6 algoritma disk (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK), sanitasi input, dan unit testing Silberschatz.
                     </td>
                   </tr>
                   <tr className="assumption-row">
-                    <td className="assumption-cell-name">Modul Inti</td>
+                    <td className="assumption-cell-name">Anggota 2</td>
                     <td className="assumption-cell-desc">
-                      Arsitektur simulator murni deterministik (Penjadwalan Disk FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK; Strategi Buffering; Arsitektur Transfer I/O Bus).
+                      <strong>Muhamad Alfian Holidi</strong> (NPM: 257006111136) — GitHub: <strong>Mhyre</strong><br />
+                      Lead Front-End UI/UX, Systems Integrator &amp; Laporan — Pengembangan UI panel instrumen (React 19 / CSS Tokens), visualisasi piringan &amp; buffer, integrasi antar-modul, halaman rumus, dan ekspor CSV.
                     </td>
                   </tr>
                   <tr className="assumption-row">
-                    <td className="assumption-cell-name">Desain Antarmuka</td>
+                    <td className="assumption-cell-name">Anggota 3</td>
                     <td className="assumption-cell-desc">
-                      Penyelarasan visual 100% Instrument Panel terkalibrasi tinggi berdasarkan spesifikasi desain Figma (03-disk, 04-disk-dark, 05-buffering, 06-transfer, 07-formulas).
+                      <strong>Nadhif Ali Zuhdi</strong> (NPM: 257006111155) — GitHub: <strong>nanakimi75</strong><br />
+                      Core Engine Developer (I/O Buffering Strategy) — Perancangan model producer-consumer &amp; antrean slot (Unbuffered, Single, Double, Circular), kalkulasi speedup &amp; idle time, dan unit testing.
+                    </td>
+                  </tr>
+                  <tr className="assumption-row">
+                    <td className="assumption-cell-name">Anggota 4</td>
+                    <td className="assumption-cell-desc">
+                      <strong>Diva Hendra</strong> (NPM: 257006111182) — GitHub: <strong>divahendraramadhan</strong><br />
+                      Core Engine Developer (Hardware Data Transfer) — Implementasi simulasi transfer data bus (Programmed I/O, Interrupt-Driven, DMA), kalkulasi siklus CPU vs controller, overhead ISR, dan unit testing.
                     </td>
                   </tr>
                   <tr className="assumption-row">
